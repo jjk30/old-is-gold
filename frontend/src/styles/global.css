@@ -1,0 +1,435 @@
+/* ============================================
+   OLD IS GOLD - Senior-Friendly Styles
+   High contrast, large fonts, big touch targets
+   ============================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* High Contrast Color Palette */
+  --primary: #1a5f2a;        /* Dark green - calming, visible */
+  --primary-light: #2d8a3e;
+  --secondary: #f5a623;      /* Warm gold accent */
+  --background: #fefefe;
+  --surface: #ffffff;
+  --text-primary: #1a1a1a;   /* Near black for readability */
+  --text-secondary: #4a4a4a;
+  --success: #2d8a3e;
+  --warning: #e67e22;
+  --error: #c0392b;
+  --border: #d0d0d0;
+  
+  /* Senior-Friendly Typography */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-size-base: 20px;    /* Larger base font */
+  --font-size-lg: 24px;
+  --font-size-xl: 32px;
+  --font-size-2xl: 42px;
+  --line-height: 1.6;
+  
+  /* Spacing */
+  --spacing-sm: 12px;
+  --spacing-md: 20px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+  
+  /* Touch Targets - Minimum 48px for accessibility */
+  --button-min-height: 56px;
+  --input-min-height: 56px;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--text-primary);
+  background: var(--background);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============== LAYOUT ============== */
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+.page {
+  min-height: 100vh;
+  padding: var(--spacing-lg);
+}
+
+/* ============== TYPOGRAPHY ============== */
+
+h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+h3 {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+p {
+  margin-bottom: var(--spacing-md);
+  color: var(--text-secondary);
+}
+
+/* ============== BUTTONS - Large & Accessible ============== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--button-min-height);
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  gap: 12px;
+}
+
+.btn:focus {
+  outline: 4px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 95, 42, 0.3);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--primary);
+  border: 3px solid var(--primary);
+}
+
+.btn-secondary:hover {
+  background: #f0f8f2;
+}
+
+.btn-success {
+  background: var(--success);
+  color: white;
+}
+
+.btn-large {
+  width: 100%;
+  min-height: 72px;
+  font-size: var(--font-size-xl);
+}
+
+/* ============== FORMS ============== */
+
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+label {
+  display: block;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+}
+
+input, select {
+  width: 100%;
+  min-height: var(--input-min-height);
+  padding: var(--spacing-md);
+  font-size: var(--font-size-base);
+  border: 3px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  transition: border-color 0.2s;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(26, 95, 42, 0.1);
+}
+
+/* ============== CARDS ============== */
+
+.card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  border: 2px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.card-highlight {
+  border-color: var(--primary);
+  border-width: 3px;
+}
+
+/* ============== EXERCISE CARDS ============== */
+
+.exercise-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  border-left: 6px solid var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.exercise-card.completed {
+  border-left-color: var(--success);
+  background: #f0fff4;
+}
+
+.exercise-name {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.exercise-meta {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+}
+
+.exercise-instructions {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  padding: var(--spacing-md);
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-top: var(--spacing-sm);
+}
+
+/* ============== PROGRESS STATS ============== */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.stat-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: var(--spacing-lg);
+  text-align: center;
+  border: 2px solid var(--border);
+}
+
+.stat-value {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-label {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* ============== NAVIGATION ============== */
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-brand {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-links {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.nav-link {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--primary);
+  background: #f0f8f2;
+}
+
+/* ============== HERO SECTION ============== */
+
+.hero {
+  text-align: center;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  background: linear-gradient(135deg, #f0f8f2 0%, #e8f5e9 100%);
+  border-radius: 24px;
+  margin-bottom: var(--spacing-xl);
+}
+
+.hero h1 {
+  font-size: 48px;
+  margin-bottom: var(--spacing-md);
+}
+
+.hero-emoji {
+  font-size: 64px;
+  margin-bottom: var(--spacing-md);
+}
+
+.hero p {
+  font-size: var(--font-size-lg);
+  max-width: 600px;
+  margin: 0 auto var(--spacing-lg);
+}
+
+/* ============== CHECKBOX OPTIONS ============== */
+
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.option-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--surface);
+  border: 3px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.option-card:hover {
+  border-color: var(--primary-light);
+}
+
+.option-card.selected {
+  border-color: var(--primary);
+  background: #f0f8f2;
+}
+
+.option-card input[type="checkbox"],
+.option-card input[type="radio"] {
+  width: 28px;
+  height: 28px;
+  min-height: auto;
+}
+
+.option-label {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+}
+
+/* ============== ALERTS ============== */
+
+.alert {
+  padding: var(--spacing-md);
+  border-radius: 12px;
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-base);
+}
+
+.alert-success {
+  background: #d4edda;
+  color: #155724;
+  border: 2px solid #28a745;
+}
+
+.alert-warning {
+  background: #fff3cd;
+  color: #856404;
+  border: 2px solid #ffc107;
+}
+
+.alert-info {
+  background: #e7f3ff;
+  color: #004085;
+  border: 2px solid #0066cc;
+}
+
+/* ============== UTILITIES ============== */
+
+.text-center { text-align: center; }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.gap-md { gap: var(--spacing-md); }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+
+/* ============== RESPONSIVE ============== */
+
+@media (max-width: 600px) {
+  :root {
+    --font-size-base: 18px;
+    --font-size-lg: 22px;
+    --font-size-xl: 28px;
+    --font-size-2xl: 36px;
+  }
+  
+  .container {
+    padding: var(--spacing-md);
+  }
+  
+  .hero h1 {
+    font-size: 36px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
