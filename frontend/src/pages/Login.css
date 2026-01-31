@@ -1,0 +1,62 @@
+.login-page {
+  min-height: 100vh;
+  background: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.login-container { width: 100%; max-width: 420px; }
+.login-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+  margin-bottom: 2rem;
+}
+.brand-old { color: #ffffff; }
+.brand-is-gold { color: #FFD700; }
+.login-card {
+  background: #111111;
+  padding: 2.5rem;
+  border-radius: 20px;
+  border: 1px solid #333;
+}
+.login-card h1 { font-size: 1.8rem; color: #FFD700; margin-bottom: 0.5rem; text-align: center; }
+.login-subtitle { color: #aaa; text-align: center; margin-bottom: 2rem; }
+.error-message { background: #3d1515; color: #ff6b6b; padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem; font-size: 0.9rem; text-align: center; border: 1px solid #ff6b6b; }
+.form-group { margin-bottom: 1.5rem; }
+.form-group label { display: block; font-weight: 600; color: #fff; margin-bottom: 0.5rem; }
+.form-input { width: 100%; padding: 1rem; border: 2px solid #333; border-radius: 12px; font-size: 1rem; transition: border-color 0.3s; box-sizing: border-box; background: #1a1a1a; color: #fff; }
+.form-input:focus { outline: none; border-color: #FFD700; }
+.form-input::placeholder { color: #666; }
+.btn-full { width: 100%; padding: 1rem; font-size: 1.1rem; }
+.btn-primary { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #000; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3); }
+.btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+.login-switch { margin-top: 1.5rem; text-align: center; color: #aaa; }
+.login-switch button { background: none; border: none; color: #FFD700; font-weight: 600; cursor: pointer; text-decoration: underline; }
+.btn-google {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #1a1a1a;
+  border: 2px solid #333;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-google:hover { background: #222; border-color: #FFD700; }
+.btn-google:disabled { opacity: 0.7; cursor: not-allowed; }
+.divider { display: flex; align-items: center; margin: 1.5rem 0; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #333; }
+.divider span { padding: 0 1rem; color: #666; font-size: 0.9rem; }

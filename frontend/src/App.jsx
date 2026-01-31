@@ -1,19 +1,22 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import React from 'react'
+import { Routes, Route } from 'react-router-dom'
 import Landing from './pages/Landing'
+import Login from './pages/Login'
 import ProfileSetup from './pages/ProfileSetup'
-import TodaysWorkout from './pages/TodaysWorkout'
+import Workout from './pages/Workout'
+import Nutrition from './pages/Nutrition'
 import Progress from './pages/Progress'
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/setup" element={<ProfileSetup />} />
-        <Route path="/workout" element={<TodaysWorkout />} />
-        <Route path="/progress" element={<Progress />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/setup" element={<ProfileSetup />} />
+      <Route path="/workout" element={<Workout />} />
+      <Route path="/nutrition" element={<Nutrition />} />
+      <Route path="/progress" element={<Progress />} />
+    </Routes>
   )
 }
 
