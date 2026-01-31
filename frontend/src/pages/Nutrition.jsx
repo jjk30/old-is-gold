@@ -24,7 +24,7 @@ const FOOD_DATABASE = {
   'fried egg': { calories: 90, protein: 6, carbs: 1, fat: 7, unit: 'piece', defaultAmount: 1, icon: '🍳' },
   'scrambled egg': { calories: 91, protein: 6, carbs: 1, fat: 7, unit: 'piece', defaultAmount: 1, icon: '🍳' },
   'omelette': { calories: 154, protein: 11, carbs: 1, fat: 12, unit: 'piece', defaultAmount: 1, icon: '🍳' },
-  'rice': { calories: 130, protein: 3, carbs: 28, fat: 0, unit: 'g', icon: '🍚' },
+  'rice': { calories: 130, protein: 3, carbs: 28, fat: 0, unit: 'g', icon: '��' },
   'white rice': { calories: 130, protein: 3, carbs: 28, fat: 0, unit: 'g', icon: '🍚' },
   'brown rice': { calories: 112, protein: 3, carbs: 24, fat: 1, unit: 'g', icon: '🍚' },
   'bread': { calories: 79, protein: 3, carbs: 15, fat: 1, unit: 'slice', defaultAmount: 1, icon: '🍞' },
@@ -55,7 +55,7 @@ const FOOD_DATABASE = {
   'biryani': { calories: 200, protein: 8, carbs: 25, fat: 8, unit: 'g', icon: '🍛' },
   'dal': { calories: 104, protein: 7, carbs: 18, fat: 1, unit: 'g', icon: '🥘' },
   'samosa': { calories: 262, protein: 4, carbs: 24, fat: 17, unit: 'piece', defaultAmount: 1, icon: '🥟' },
-  'nuts': { calories: 607, protein: 20, carbs: 21, fat: 54, unit: 'g', icon: '��' },
+  'nuts': { calories: 607, protein: 20, carbs: 21, fat: 54, unit: 'g', icon: '🥜' },
   'chocolate': { calories: 546, protein: 5, carbs: 60, fat: 31, unit: 'g', icon: '🍫' },
 }
 
@@ -90,7 +90,7 @@ function Nutrition() {
       const response = await fetch(`${API_URL}/nutrition/${userId}`)
       if (response.ok) {
         const data = await response.json()
-        setMeals(data.meals || [])
+        setMeals(Array.isArray(data) ? data : [])
       }
     } catch (error) {
       console.error('Error fetching meals:', error)
@@ -138,39 +138,81 @@ function Nutrition() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: userId, date: today, meal_type: mealType,
-          food_name: `${pickedFood.name} (${qty} ${pickedFood.unit})`,
-          calories: nutrition.calories, protein: nutrition.protein,
-          carbs: nutrition.carbs, fat: nutrition.fat
+          user_id: userId,
+          date: today,
+          meal_type: mealType,
+          food: pickedFood.name,
+          calories: nutrition.calories,
+          protein: nutrition.protein,
+          carbs: nutrition.carbs,
+          fat: nutrition.fat
         })
       })
-      if (response.ok) { fetchMeals(); setStep(1); setPickedFood(null); setQty(''); setSearchText('') }
-    } catch (error) { console.error('Error adding meal:', error) }
-    finally { setSaving(false) }
+      if (response.ok) {
+        fetchMeals()
+        setStep(1)
+        setPickedFood(null)
+        setQty('')
+        setSearchText('')
+      }
+    } catch (error) {
+      console.error('Error adding meal:', error)
+    } finally {
+      setSaving(false)
+    }
   }
 
   const deleteMeal = async (mealId) => {
     try {
       await fetch(`${API_URL}/nutrition/${userId}/${mealId}`, { method: 'DELETE' })
       fetchMeals()
-    } catch (error) { console.error('Error deleting meal:', error) }
+    } catch (error) {
+      console.error('Error deleting meal:', error)
+    }
   }
 
   if (loading) return <div className="loading-screen"><div className="spinner"></div></div>
 
   return (
     <div className="nutrition-page">
-      <header className="nutrition-header"><div className="header-content"><Link to="/" className="brand"><span className="logo-og"><span className="logo-o">O</span><span className="logo-g">G</span></span> <span className="brand-old">Old</span> <span className="brand-gold">Is Gold</span></Link><nav className="header-nav"><Link to="/nutrition" className="nav-link active">Nutrition</Link><Link to="/workout" className="nav-link">Workout</Link><Link to="/progress" className="nav-link">Progress</Link></nav></div></header>
+      <header className="nutrition-header">
+        <div className="header-content">
+          <Link to="/" className="brand">
+            <span className="logo-og"><span className="logo-o">O</span><span className="logo-g">G</span></span>
+            <span className="brand-old">Old</span> <span className="brand-gold">Is Gold</span>
+          </Link>
+          <nav className="header-nav">
+            <Link to="/nutrition" className="nav-link active">Nutrition</Link>
+            <Link to="/workout" className="nav-link">Workout</Link>
+            <Link to="/progress" className="nav-link">Progress</Link>
+          </nav>
+        </div>
+      </header>
+      
       <main className="nutrition-main">
         <div className="container">
-          <div className="nutrition-hero"><h1>🍎 Nutrition Tracker</h1><p>Track your meals and stay healthy, {userName}!</p></div>
+          <div className="nutrition-hero">
+            <h1>🍎 Nutrition Tracker</h1>
+            <p>Track your meals and stay healthy, {userName}!</p>
+          </div>
 
           <div className="stats-card">
-            <div className="stats-header"><h3>Today's Calories</h3>
-              <div className="stats-numbers"><span className="consumed">{todayStats.calories}</span><span className="remaining">{remaining}</span><span className="goal">{dailyGoal}</span></div>
-              <div className="stats-labels"><span>Consumed</span><span>Remaining</span><span>Goal</span></div>
+            <div className="stats-header">
+              <h3>Today's Calories</h3>
+              <div className="stats-numbers">
+                <span className="consumed">{todayStats.calories}</span>
+                <span className="remaining">{remaining}</span>
+                <span className="goal">{dailyGoal}</span>
+              </div>
+              <div className="stats-labels">
+                <span>Consumed</span>
+                <span>Remaining</span>
+                <span>Goal</span>
+              </div>
             </div>
-            <div className="progress-bar"><div className="progress-fill" style={{ width: `${Math.min((todayStats.calories / dailyGoal) * 100, 100)}%` }}></div></div>
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${Math.min((todayStats.calories / dailyGoal) * 100, 100)}%` }}></div>
+            </div>
           </div>
 
           <div className="macros-grid">
@@ -181,7 +223,13 @@ function Nutrition() {
 
           <div className="meal-type-section">
             <label>Meal Type</label>
-            <div className="meal-type-buttons">{MEAL_TYPES.map(t => <button key={t.id} className={`meal-type-btn ${mealType === t.id ? 'active' : ''}`} onClick={() => setMealType(t.id)}><span>{t.icon}</span><span>{t.name}</span></button>)}</div>
+            <div className="meal-type-buttons">
+              {MEAL_TYPES.map(t => (
+                <button key={t.id} className={`meal-type-btn ${mealType === t.id ? 'active' : ''}`} onClick={() => setMealType(t.id)}>
+                  <span>{t.icon}</span><span>{t.name}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="food-input-card">
@@ -189,26 +237,70 @@ function Nutrition() {
               <div className="step-search">
                 <label>What did you eat?</label>
                 <input type="text" value={searchText} onChange={e => setSearchText(e.target.value)} placeholder="Type to search... egg, rice, chicken" className="form-input" autoComplete="off" />
-                {suggestions.length > 0 && <div className="suggestions-box">{suggestions.map((s, i) => <button key={i} className="sug-btn" onClick={() => selectFood(s)}><span className="sug-icon">{s.icon}</span><span className="sug-name">{s.name}</span><span className="sug-cal">{s.calories} cal/{s.unit}</span></button>)}</div>}
+                {suggestions.length > 0 && (
+                  <div className="suggestions-box">
+                    {suggestions.map((s, i) => (
+                      <button key={i} className="sug-btn" onClick={() => selectFood(s)}>
+                        <span className="sug-icon">{s.icon}</span>
+                        <span className="sug-name">{s.name}</span>
+                        <span className="sug-cal">{s.calories} cal/{s.unit}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             {step === 2 && pickedFood && (
               <div className="step-amount">
-                <div className="picked-header"><div className="picked-info"><span className="picked-icon">{pickedFood.icon}</span><span className="picked-name">{pickedFood.name}</span></div><button className="back-btn" onClick={goBackToSearch}>← Change</button></div>
-                <div className="qty-section"><label>How many {pickedFood.unit}s?</label><div className="qty-row"><input type="number" value={qty} onChange={e => setQty(e.target.value)} className="form-input qty-input" autoFocus /><span className="unit-pill">{pickedFood.unit}</span></div></div>
-                {nutrition && <div className="nut-grid"><div className="nut-box cal"><div className="nut-val">{nutrition.calories}</div><div className="nut-lbl">Calories</div></div><div className="nut-box pro"><div className="nut-val">{nutrition.protein}g</div><div className="nut-lbl">Protein</div></div><div className="nut-box carb"><div className="nut-val">{nutrition.carbs}g</div><div className="nut-lbl">Carbs</div></div><div className="nut-box fat"><div className="nut-val">{nutrition.fat}g</div><div className="nut-lbl">Fat</div></div></div>}
+                <div className="picked-header">
+                  <div className="picked-info">
+                    <span className="picked-icon">{pickedFood.icon}</span>
+                    <span className="picked-name">{pickedFood.name}</span>
+                  </div>
+                  <button className="back-btn" onClick={goBackToSearch}>← Change</button>
+                </div>
+                <div className="qty-section">
+                  <label>How many {pickedFood.unit}s?</label>
+                  <div className="qty-row">
+                    <input type="number" value={qty} onChange={e => setQty(e.target.value)} className="form-input qty-input" autoFocus />
+                    <span className="unit-pill">{pickedFood.unit}</span>
+                  </div>
+                </div>
+                {nutrition && (
+                  <div className="nut-grid">
+                    <div className="nut-box cal"><div className="nut-val">{nutrition.calories}</div><div className="nut-lbl">Calories</div></div>
+                    <div className="nut-box pro"><div className="nut-val">{nutrition.protein}g</div><div className="nut-lbl">Protein</div></div>
+                    <div className="nut-box carb"><div className="nut-val">{nutrition.carbs}g</div><div className="nut-lbl">Carbs</div></div>
+                    <div className="nut-box fat"><div className="nut-val">{nutrition.fat}g</div><div className="nut-lbl">Fat</div></div>
+                  </div>
+                )}
               </div>
             )}
-            <button className="btn btn-primary add-meal-btn" onClick={addMeal} disabled={step !== 2 || !pickedFood || saving}>{saving ? 'Adding...' : '➕ Add Meal'}</button>
+            <button className="btn btn-primary add-meal-btn" onClick={addMeal} disabled={step !== 2 || !pickedFood || saving}>
+              {saving ? 'Adding...' : '+ Add Meal'}
+            </button>
           </div>
 
           {todayMeals.length > 0 && (
-            <div className="meals-list"><h3>Today's Meals</h3>
-              {todayMeals.map((meal) => <div key={meal.progress_id} className="meal-item"><div className="meal-icon">🍽️</div><div className="meal-info"><strong>{meal.food_name}</strong><span>{meal.meal_type} • P:{meal.protein}g C:{meal.carbs}g F:{meal.fat}g</span></div><div className="meal-calories">{meal.calories} cal</div><button className="delete-btn" onClick={() => deleteMeal(meal.progress_id)}>🗑️</button></div>)}
+            <div className="meals-list">
+              <h3>Today's Meals</h3>
+              {todayMeals.map((meal) => (
+                <div key={meal.progress_id} className="meal-item">
+                  <div className="meal-icon">🍽️</div>
+                  <div className="meal-info">
+                    <strong>{meal.food || meal.food_name}</strong>
+                    <span>{meal.meal_type} • P:{meal.protein}g C:{meal.carbs}g F:{meal.fat}g</span>
+                  </div>
+                  <div className="meal-calories">{meal.calories} cal</div>
+                  <button className="delete-btn" onClick={() => deleteMeal(meal.progress_id)}>🗑️</button>
+                </div>
+              ))}
             </div>
           )}
 
-          <div className="continue-section"><button className="btn btn-primary btn-large" onClick={() => navigate('/workout')}>Continue to Workout →</button></div>
+          <div className="continue-section">
+            <button className="btn btn-primary btn-large" onClick={() => navigate('/workout')}>Continue to Workout →</button>
+          </div>
         </div>
       </main>
     </div>
