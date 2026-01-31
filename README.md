@@ -51,12 +51,11 @@ aws cloudfront create-invalidation --distribution-id E1F1M9HXF6IJ7V --paths "/*"
 └── .github/         # CI/CD
 ```
 
-## TODO
+## Next Steps
 
-- [ ] Add more exercises to the database
-- [ ] Weekly email summaries
-- [ ] Dark/light mode toggle
-- [ ] Export progress as PDF
+a) Add more exercises to the database
+b) Weekly email summaries
+c) Dark/light mode toggle
 
 ## Notes
 
