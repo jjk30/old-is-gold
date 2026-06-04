@@ -1,4 +1,8 @@
-const YOUTUBE_API_KEY = 'AIzaSyCgh584NXa8KZp8-QH1H0E1zSnppgNhAsE'
+// The YouTube Data API key now lives server-side. We call our own Lambda
+// (/youtube), which holds the billable key in an env var, instead of shipping
+// it in the client bundle.
+import { apiGet } from './api'
+
 const CACHE_KEY = 'youtube_video_cache'
 const CACHE_DURATION = 24 * 60 * 60 * 1000
 
@@ -41,18 +45,15 @@ export async function searchExerciseVideo(exerciseName) {
   if (cache[exerciseName]) return cache[exerciseName]
 
   try {
-    const query = encodeURIComponent(exerciseName + ' senior exercise tutorial')
-    const url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q=' + query + '&type=video&maxResults=1&videoDuration=medium&key=' + YOUTUBE_API_KEY
-    const response = await fetch(url)
+    const response = await apiGet('/youtube?q=' + encodeURIComponent(exerciseName))
     if (!response.ok) throw new Error('API failed')
-    const data = await response.json()
-    if (data.items && data.items.length > 0) {
-      const video = data.items[0]
+    const video = await response.json()
+    if (video && video.videoId) {
       const result = {
-        videoId: video.id.videoId,
-        title: video.snippet.title,
-        thumbnail: video.snippet.thumbnails.high.url,
-        channelTitle: video.snippet.channelTitle,
+        videoId: video.videoId,
+        title: video.title,
+        thumbnail: video.thumbnail,
+        channelTitle: video.channelTitle,
         isDefault: false
       }
       setCache({ ...cache, [exerciseName]: result })

@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { auth } from '../firebase'
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { apiGet } from '../utils/api'
 import './Login.css'
 
 const googleProvider = new GoogleAuthProvider()
-const API_URL = 'https://gy19tatq9g.execute-api.us-east-1.amazonaws.com/prod'
 
 function Login() {
   const navigate = useNavigate()
@@ -18,7 +18,7 @@ function Login() {
 
   const checkUserProfile = async (userId) => {
     try {
-      const res = await fetch(`${API_URL}/profile/${userId}`)
+      const res = await apiGet(`/profile/${userId}`)
       if (res.ok) {
         const profile = await res.json()
         return profile && profile.user_id

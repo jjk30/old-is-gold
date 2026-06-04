@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { apiGet, apiPost, apiDelete } from '../utils/api'
 import './Nutrition.css'
-
-const API_URL = 'https://gy19tatq9g.execute-api.us-east-1.amazonaws.com/prod'
 
 const getLocalDateString = (date = new Date()) => {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
@@ -87,7 +86,7 @@ function Nutrition() {
 
   const fetchMeals = async () => {
     try {
-      const response = await fetch(`${API_URL}/nutrition/${userId}`)
+      const response = await apiGet(`/nutrition/${userId}`)
       if (response.ok) {
         const data = await response.json()
         setMeals(Array.isArray(data) ? data : [])
@@ -134,19 +133,15 @@ function Nutrition() {
     if (!pickedFood || !qty || !nutrition) return
     setSaving(true)
     try {
-      const response = await fetch(`${API_URL}/nutrition`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: userId,
-          date: today,
-          meal_type: mealType,
-          food: pickedFood.name,
-          calories: nutrition.calories,
-          protein: nutrition.protein,
-          carbs: nutrition.carbs,
-          fat: nutrition.fat
-        })
+      const response = await apiPost('/nutrition', {
+        user_id: userId,
+        date: today,
+        meal_type: mealType,
+        food: pickedFood.name,
+        calories: nutrition.calories,
+        protein: nutrition.protein,
+        carbs: nutrition.carbs,
+        fat: nutrition.fat
       })
       if (response.ok) {
         fetchMeals()
@@ -164,7 +159,7 @@ function Nutrition() {
 
   const deleteMeal = async (mealId) => {
     try {
-      await fetch(`${API_URL}/nutrition/${userId}/${mealId}`, { method: 'DELETE' })
+      await apiDelete(`/nutrition/${userId}/${mealId}`)
       fetchMeals()
     } catch (error) {
       console.error('Error deleting meal:', error)
