@@ -22,6 +22,7 @@ import boto3
 from boto3.dynamodb.conditions import Key
 
 import auth
+import ratelimit
 
 dynamodb = boto3.resource("dynamodb")
 users_table = dynamodb.Table("oldisgold-users")
@@ -225,6 +226,15 @@ def lambda_handler(event, context):
 
         parts = [p for p in path.split("/") if p]  # e.g. ['progress', '<id>']
         resource = parts[0] if parts else ""
+
+        # ---- Per-uid rate limiting (after auth, before routing). The metered
+        # /youtube proxy gets a tighter cap; everything else uses the general
+        # cap. Fails open if the limiter backend is unavailable. ---------------
+        tier = ratelimit.TIER_YOUTUBE if resource == "youtube" else ratelimit.TIER_GENERAL
+        allowed, retry_after = ratelimit.check_rate_limit(uid, tier)
+        if not allowed:
+            return respond(429, {"error": "Too many requests"},
+                           {**headers, "Retry-After": str(retry_after)})
 
         # ---- YouTube proxy (any authenticated user) --------------------------
         if resource == "youtube" and method == "GET":
