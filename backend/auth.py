@@ -28,6 +28,11 @@ GOOGLE_CERTS_URL = (
 # projects/stages; falls back to the known production project id.
 FIREBASE_PROJECT_ID = os.environ.get("FIREBASE_PROJECT_ID", "old-is-gold-be8c8")
 
+# Tolerance (seconds) for clock skew between this Lambda and Google when checking
+# time-based claims. Keeps legitimate tokens from being rejected by tiny drift
+# while still failing closed on genuinely expired / not-yet-valid tokens.
+CLOCK_SKEW_LEEWAY = 60
+
 # Simple in-memory cert cache, reused across warm Lambda invocations.
 _cert_cache = {"keys": {}, "expires_at": 0.0}
 
@@ -106,17 +111,35 @@ def verify_token(auth_header):
 
     issuer = f"https://securetoken.google.com/{FIREBASE_PROJECT_ID}"
     try:
+        # algorithms=["RS256"] pins the algorithm: "none" and HS256 tokens are
+        # rejected (no algorithm-confusion). PyJWT verifies the signature and the
+        # exp / iat (incl. future-iat) / aud / iss claims; require= makes their
+        # absence a hard failure so we never accept a token missing them.
         claims = jwt.decode(
             token,
             public_key,
             algorithms=["RS256"],
             audience=FIREBASE_PROJECT_ID,
             issuer=issuer,
+            leeway=CLOCK_SKEW_LEEWAY,
+            options={"require": ["exp", "iat", "aud", "iss", "sub"]},
         )
     except jwt.ExpiredSignatureError:
         raise AuthError("Token expired")
-    except jwt.PyJWTError as e:
+    except jwt.PyJWTError:
+        # Never echo the underlying exception or token contents.
         raise AuthError("Invalid token")
+
+    # auth_time is a Firebase-specific claim PyJWT does not validate; reject a
+    # token whose authentication time is in the future (fail closed).
+    auth_time = claims.get("auth_time")
+    if auth_time is not None:
+        try:
+            in_future = float(auth_time) > time.time() + CLOCK_SKEW_LEEWAY
+        except (TypeError, ValueError):
+            raise AuthError("Invalid token")
+        if in_future:
+            raise AuthError("Invalid token")
 
     uid = claims.get("sub")
     if not uid:
