@@ -6,7 +6,6 @@ import ProfileSetup from './pages/ProfileSetup'
 import Workout from './pages/Workout'
 import Nutrition from './pages/Nutrition'
 import Progress from './pages/Progress'
-import Settings from './pages/Settings'
 import ProtectedRoute from './ProtectedRoute'
 
 function App() {
@@ -18,7 +17,6 @@ function App() {
       <Route path="/workout" element={<ProtectedRoute><Workout /></ProtectedRoute>} />
       <Route path="/nutrition" element={<ProtectedRoute><Nutrition /></ProtectedRoute>} />
       <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
     </Routes>
   )
 }
