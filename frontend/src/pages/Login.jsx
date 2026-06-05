@@ -16,16 +16,21 @@ function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
+  // Returns one of: 'has' (profile exists), 'none' (genuinely no profile),
+  // or 'error' (transient failure — cold start, network blip, 429, 5xx, etc.)
   const checkUserProfile = async (userId) => {
     try {
       const res = await apiGet(`/profile/${userId}`)
       if (res.ok) {
         const profile = await res.json()
-        return profile && profile.user_id
+        return profile && profile.user_id ? 'has' : 'none'
       }
-      return false
+      if (res.status === 404) {
+        return 'none'
+      }
+      return 'error'
     } catch {
-      return false
+      return 'error'
     }
   }
 
@@ -41,13 +46,20 @@ function Login() {
       localStorage.setItem('userName', userName)
       
       // Check if user has a profile
-      const hasProfile = await checkUserProfile(uid)
-      
-      if (hasProfile) {
+      let profileState = await checkUserProfile(uid)
+      if (profileState === 'error') {
+        // Retry once — covers a slow first request or token settling
+        await new Promise((r) => setTimeout(r, 800))
+        profileState = await checkUserProfile(uid)
+      }
+
+      if (profileState === 'none') {
+        navigate('/setup')
+      } else {
+        // 'has', or still 'error' — never dump an existing user into setup
+        // on a transient failure
         localStorage.setItem('profileComplete', 'true')
         navigate('/workout')
-      } else {
-        navigate('/setup')
       }
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') {
@@ -74,12 +86,20 @@ function Login() {
         localStorage.setItem('userName', email.split('@')[0])
         
         // Check if user has a profile
-        const hasProfile = await checkUserProfile(result.user.uid)
-        if (hasProfile) {
+        let profileState = await checkUserProfile(result.user.uid)
+        if (profileState === 'error') {
+          // Retry once — covers a slow first request or token settling
+          await new Promise((r) => setTimeout(r, 800))
+          profileState = await checkUserProfile(result.user.uid)
+        }
+
+        if (profileState === 'none') {
+          navigate('/setup')
+        } else {
+          // 'has', or still 'error' — never dump an existing user into setup
+          // on a transient failure
           localStorage.setItem('profileComplete', 'true')
           navigate('/workout')
-        } else {
-          navigate('/setup')
         }
       }
     } catch (err) {
