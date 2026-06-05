@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { apiGet } from '../utils/api'
+import { apiGet, apiDelete } from '../utils/api'
 import { useAuth } from '../AuthContext'
+import { auth } from '../firebase'
+import { deleteUser } from 'firebase/auth'
 import './Progress.css'
 
 const getLocalDateString = (date = new Date()) => {
@@ -10,7 +12,7 @@ const getLocalDateString = (date = new Date()) => {
 
 function Progress() {
   const navigate = useNavigate()
-  const { logout } = useAuth()
+  const { user, logout } = useAuth()
   const [progressData, setProgressData] = useState([])
   const [mealsData, setMealsData] = useState([])
   const [loading, setLoading] = useState(true)
@@ -80,6 +82,22 @@ function Progress() {
   }
 
   const handleDeleteAccount = async () => {
+    // Delete server-side data first; if it fails, don't pretend we succeeded.
+    try {
+      await apiDelete(`/account/${user.uid}`)
+    } catch (err) {
+      console.error('Delete account error:', err)
+      alert('Could not delete your account. Please try again.')
+      return
+    }
+
+    // Best-effort removal of the Firebase auth account; fall back to sign-out.
+    try {
+      await deleteUser(auth.currentUser)
+    } catch {
+      try { await logout() } catch (_) {}
+    }
+
     setShowDeleteConfirm(false)
     setShowGoodbye(true)
     setTimeout(() => {
