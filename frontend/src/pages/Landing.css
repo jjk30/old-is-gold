@@ -17,11 +17,15 @@
   --gold-ink: #18130a;
   --cream: #fcfdf7;
   --danger: #e08274;
+  --danger-soft: rgba(224, 130, 116, 0.10);
   --radius: 18px;
   --radius-s: 12px;
-  --maxw: 1120px;
   --ease: cubic-bezier(.2, .7, .2, 1);
+  /* Comfortable, responsive edge padding shared by header / main / footer. */
+  --edge-pad: clamp(20px, 3vw, 56px);
 
+  /* Full-height flex column so the footer is pinned to the bottom and the
+     main content area flexes to fill and stays vertically centered. */
   min-height: 100vh;
   background: var(--bg);
   color: var(--ink);
@@ -61,20 +65,12 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.landing-page .shell {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 0 32px;
-}
-
 /*
  * Medallion: cream-filled circle with the (light-background) logo centred,
  * ringed in gold. The --logo url is injected from JSX so Vite can hash the asset.
  */
 .landing-page .medallion {
+  display: block;
   border-radius: 50%;
   background-color: var(--cream);
   background-image: var(--logo);
@@ -83,7 +79,7 @@
   box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px rgba(217, 178, 90, 0.55);
 }
 
-/* Header */
+/* Header — full width: brand hard-left, nav hard-right, edge padding only. */
 .landing-page .topbar {
   position: relative;
   z-index: 5;
@@ -91,7 +87,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 26px 0 22px;
+  width: 100%;
+  padding: 24px var(--edge-pad) 20px;
   border-bottom: 1px solid rgba(228, 196, 122, 0.12);
 }
 .landing-page .brand {
@@ -123,39 +120,27 @@
 .landing-page .main-nav {
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-.landing-page .nav-link {
-  font-weight: 600;
-  font-size: 18px;
-  color: var(--ink-soft);
-  text-decoration: none;
-  padding: 13px 18px;
-  border-radius: var(--radius-s);
-  transition: color .25s var(--ease), background .25s var(--ease);
-}
-.landing-page .nav-link:hover {
-  color: var(--ink);
-  background: rgba(255, 255, 255, 0.04);
+  gap: 10px;
 }
 
-/* Single "Log in" pill (logged-out header) */
-.landing-page .login-pill {
+/* Single "Log in" link (logged-out header) */
+.landing-page .login-link {
+  display: inline-flex;
+  align-items: center;
   font-weight: 600;
   font-size: 18px;
   color: var(--ink);
   text-decoration: none;
   padding: 12px 24px;
-  border-radius: 999px;
+  border-radius: var(--radius-s);
   border: 1px solid rgba(228, 196, 122, 0.4);
-  transition: background .25s var(--ease), border-color .25s var(--ease);
+  transition: background .25s var(--ease);
 }
-.landing-page .login-pill:hover {
+.landing-page .login-link:hover {
   background: rgba(228, 196, 122, 0.08);
-  border-color: rgba(228, 196, 122, 0.7);
 }
 
-/* "My Workouts" dropdown (logged-in header) */
+/* Dropdowns (My Workouts + Settings) */
 .landing-page .menu-wrap {
   position: relative;
 }
@@ -188,7 +173,7 @@
   position: absolute;
   right: 0;
   top: calc(100% + 12px);
-  width: 288px;
+  width: 260px;
   background: var(--panel);
   border: 1px solid var(--edge);
   border-radius: var(--radius);
@@ -230,6 +215,14 @@
   font-size: 14px;
   color: var(--ink-faint);
 }
+.landing-page .menu-cap {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding: 10px 12px 6px;
+}
 .landing-page .menu-sep {
   height: 1px;
   background: rgba(255, 255, 255, 0.08);
@@ -260,6 +253,15 @@
 .landing-page .menu-item:hover {
   background: rgba(255, 255, 255, 0.05);
 }
+.landing-page .menu-item.danger {
+  color: var(--danger);
+}
+.landing-page .menu-item.danger svg {
+  color: var(--danger);
+}
+.landing-page .menu-item.danger:hover {
+  background: var(--danger-soft);
+}
 
 /* Hero */
 .landing-page main {
@@ -271,46 +273,46 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 56px 0 84px;
+  padding: 56px var(--edge-pad) 84px;
 }
 .landing-page .hero-logo {
-  width: clamp(220px, 32vw, 300px);
-  height: clamp(220px, 32vw, 300px);
-  margin: 0 auto 40px;
-  box-shadow: 0 0 0 5px var(--bg), 0 0 0 7px rgba(217, 178, 90, 0.55),
-    0 40px 80px -28px rgba(0, 0, 0, 0.75), 0 0 90px -30px rgba(217, 178, 90, 0.35);
+  width: clamp(176px, 24vw, 224px);
+  height: clamp(176px, 24vw, 224px);
+  margin: 0 auto 36px;
+  box-shadow: 0 0 0 5px var(--bg), 0 0 0 7px rgba(217, 178, 90, 0.5),
+    0 36px 70px -30px rgba(0, 0, 0, 0.7);
 }
 .landing-page .eyebrow {
   font-family: "Hanken Grotesk", sans-serif;
   font-weight: 700;
-  font-size: 15px;
-  letter-spacing: .14em;
+  font-size: 14px;
+  letter-spacing: .18em;
   text-transform: uppercase;
   color: var(--gold);
-  margin: 0 0 16px;
+  margin: 0 0 18px;
 }
 .landing-page .tagline {
   font-family: "Fraunces", serif;
   font-weight: 400;
   font-style: italic;
-  font-size: clamp(24px, 3.4vw, 34px);
-  line-height: 1.3;
+  font-size: clamp(26px, 3.6vw, 38px);
+  line-height: 1.25;
   color: var(--ink);
-  max-width: 22ch;
-  margin: 0 auto 14px;
+  max-width: 20ch;
+  margin: 0 auto 16px;
   letter-spacing: -0.01em;
 }
 .landing-page .subline {
   font-size: 20px;
   line-height: 1.55;
   color: var(--ink-soft);
-  max-width: 34ch;
-  margin: 0 auto 42px;
+  max-width: 36ch;
+  margin: 0 auto 40px;
 }
 
 /*
  * Primary button: FLAT solid gold, dark text, soft drop shadow only.
- * No gradient, no glow, no shiny top edge. Hover lifts 1px and brightens.
+ * No gradient, no glow. Hover lifts 1px and brightens.
  */
 .landing-page .btn-primary {
   display: inline-flex;
@@ -327,8 +329,8 @@
   padding: 0 56px;
   border-radius: 16px;
   background: var(--gold);
-  box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.6);
-  transition: transform .2s var(--ease), background .25s var(--ease);
+  box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
+  transition: transform .15s var(--ease), background .2s var(--ease);
 }
 .landing-page .btn-primary:hover {
   transform: translateY(-1px);
@@ -338,27 +340,26 @@
   transform: translateY(0);
 }
 .landing-page .sub-cta {
-  margin-top: 20px;
-  font-size: 16px;
+  margin-top: 22px;
+  font-size: 17px;
   color: var(--ink-faint);
 }
-.landing-page .text-link {
+.landing-page .sub-cta a {
   color: var(--gold);
   text-decoration: none;
   font-weight: 600;
 }
-.landing-page .text-link:hover {
-  color: var(--gold-bright);
+.landing-page .sub-cta a:hover {
   text-decoration: underline;
 }
 
-/* Footer */
+/* Footer — divider and content span the full width, pinned to the bottom. */
 .landing-page footer {
   position: relative;
   z-index: 1;
   text-align: center;
   border-top: 1px solid rgba(228, 196, 122, 0.12);
-  padding: 30px 0 44px;
+  padding: 30px var(--edge-pad) 40px;
 }
 .landing-page footer .fmark {
   font-family: "Fraunces", serif;
@@ -376,9 +377,9 @@
   animation: landing-rise .9s var(--ease) forwards;
 }
 .landing-page .d1 { animation-delay: .06s; }
-.landing-page .d2 { animation-delay: .20s; }
-.landing-page .d3 { animation-delay: .34s; }
-.landing-page .d4 { animation-delay: .46s; }
+.landing-page .d2 { animation-delay: .18s; }
+.landing-page .d3 { animation-delay: .30s; }
+.landing-page .d4 { animation-delay: .42s; }
 @keyframes landing-rise {
   to { opacity: 1; transform: none; }
 }
@@ -391,11 +392,162 @@
   border-radius: 10px;
 }
 
+/* Delete confirm dialog */
+.landing-page .modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(8, 6, 3, 0.72);
+  backdrop-filter: blur(4px);
+}
+.landing-page .modal-box {
+  width: 100%;
+  max-width: 440px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  padding: 30px 28px;
+  text-align: center;
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.85);
+}
+.landing-page .modal-box h2 {
+  font-family: "Fraunces", serif;
+  font-weight: 500;
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+.landing-page .modal-box p {
+  color: var(--ink-soft);
+  font-size: 17px;
+  line-height: 1.5;
+  margin-bottom: 26px;
+}
+.landing-page .modal-buttons {
+  display: flex;
+  gap: 12px;
+}
+.landing-page .modal-btn {
+  flex: 1;
+  font-family: "Hanken Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  cursor: pointer;
+  min-height: 56px;
+  border-radius: 14px;
+  border: none;
+  transition: filter .2s var(--ease), background .2s var(--ease);
+}
+.landing-page .modal-btn.cancel {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ink);
+  border: 1px solid var(--edge);
+}
+.landing-page .modal-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.landing-page .modal-btn.delete {
+  background: var(--danger);
+  color: #2a120d;
+}
+.landing-page .modal-btn.delete:hover {
+  filter: brightness(1.06);
+}
+
+/* Full-screen loading / goodbye screen (logout + delete) */
+.landing-page .load-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  background: radial-gradient(120% 90% at 50% 30%, #1c1810 0%, #100d08 70%);
+}
+.landing-page .lo-ring {
+  position: relative;
+  width: 132px;
+  height: 132px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+.landing-page .lo-ring .medallion {
+  width: 104px;
+  height: 104px;
+  box-shadow: 0 0 0 4px #100d08, 0 0 0 6px rgba(217, 178, 90, 0.35);
+}
+.landing-page .lo-ring .spin {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: var(--gold-bright);
+  border-right-color: rgba(217, 178, 90, 0.35);
+  animation: landing-spin 1.1s linear infinite;
+}
+@keyframes landing-spin {
+  to { transform: rotate(360deg); }
+}
+.landing-page .lo-title {
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-size: 28px;
+  color: var(--ink);
+  margin-bottom: 12px;
+  max-width: 22ch;
+}
+.landing-page .lo-sub {
+  font-size: 17px;
+  color: var(--ink-soft);
+  margin-bottom: 30px;
+  max-width: 34ch;
+  line-height: 1.5;
+}
+.landing-page .lo-bar {
+  width: 240px;
+  max-width: 70vw;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.landing-page .lo-bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold-bright));
+  /* Duration comes from JS (--load-ms) so it tracks LOGOUT_MS / DELETE_MS. */
+  animation: landing-fill var(--load-ms, 5000ms) linear forwards;
+}
+@keyframes landing-fill {
+  to { width: 100%; }
+}
+
+/*
+ * Respect reduced-motion: drop the entrance reveal, the spinner, and the
+ * progress fill animation. The bar shows full so it still reads as "done".
+ */
 @media (prefers-reduced-motion: reduce) {
   .landing-page .reveal {
     animation: none;
     opacity: 1;
     transform: none;
+  }
+  .landing-page .lo-ring .spin {
+    animation: none;
+  }
+  .landing-page .lo-bar i {
+    animation: none;
+    width: 100%;
   }
   .landing-page * {
     transition: none !important;
@@ -406,12 +558,10 @@
   .landing-page {
     font-size: 18px;
   }
-  .landing-page .shell {
-    padding: 0 20px;
-  }
   .landing-page .topbar {
-    padding: 20px 0 16px;
-    gap: 10px;
+    padding: 18px 18px 14px;
+    gap: 8px;
+    flex-wrap: wrap;
   }
   .landing-page .wordmark {
     font-size: 21px;
@@ -420,8 +570,8 @@
     width: 40px;
     height: 40px;
   }
-  .landing-page .nav-link {
-    padding: 11px 12px;
+  .landing-page .login-link {
+    padding: 11px 18px;
     font-size: 16px;
   }
   .landing-page .menu-trigger {
@@ -429,7 +579,7 @@
     padding: 10px 12px 10px 14px;
   }
   .landing-page .menu {
-    width: min(288px, calc(100vw - 40px));
+    width: min(260px, calc(100vw - 36px));
   }
   .landing-page .btn-primary {
     width: 100%;
