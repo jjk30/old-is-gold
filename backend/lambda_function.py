@@ -363,6 +363,18 @@ def lambda_handler(event, context):
                     Key={"user_id": uid, "progress_id": parts[2]})
                 return respond(200, {"message": "Meal deleted"}, headers)
 
+        # ---- Account deletion (removes ALL of the caller's data) -------------
+        if resource == "account" and method == "DELETE":
+            require_owner(parts, uid)
+            items = query_all(progress_table, uid)
+            with progress_table.batch_writer() as batch:
+                for it in items:
+                    batch.delete_item(Key={"user_id": uid, "progress_id": it["progress_id"]})
+            profiles_table.delete_item(Key={"user_id": uid})
+            users_table.delete_item(Key={"user_id": uid})
+            plans_table.delete_item(Key={"user_id": uid})
+            return respond(200, {"message": "Account data deleted"}, headers)
+
         return respond(404, {"error": "Not found"}, headers)
 
     except auth.AuthError as e:

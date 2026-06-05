@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
+import { apiDelete } from '../utils/api'
+import { auth } from '../firebase'
+import { deleteUser } from 'firebase/auth'
 import './Landing.css'
 
 function Landing() {
   const navigate = useNavigate()
-  const { logout } = useAuth()
+  const { user, logout } = useAuth()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -29,10 +32,26 @@ function Landing() {
     setShowSettings(false)
   }
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
+    // Delete server-side data first; if it fails, don't pretend we succeeded.
+    try {
+      await apiDelete(`/account/${user.uid}`)
+    } catch (err) {
+      console.error('Delete account error:', err)
+      alert('Could not delete your account. Please try again.')
+      return
+    }
+
+    // Best-effort removal of the Firebase auth account; fall back to sign-out.
+    try {
+      await deleteUser(auth.currentUser)
+    } catch {
+      try { await logout() } catch (_) {}
+    }
+
     setShowDeleteConfirm(false)
     setShowGoodbye(true)
-    
+
     setTimeout(() => {
       localStorage.clear()
       setIsLoggedIn(false)
