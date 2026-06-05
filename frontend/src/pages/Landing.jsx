@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../AuthContext'
 import './Landing.css'
 
 function Landing() {
   const navigate = useNavigate()
+  const { logout } = useAuth()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -16,7 +18,12 @@ function Landing() {
     setIsLoggedIn(!!userId)
   }, [])
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await logout()
+    } catch (err) {
+      console.error('Logout error:', err)
+    }
     localStorage.clear()
     setIsLoggedIn(false)
     setShowSettings(false)

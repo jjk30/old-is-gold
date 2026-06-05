@@ -43,21 +43,23 @@ and the Lambda (packaged from `backend/`), so source and production can't drift.
 
 ### One-time CI setup (you need to do this)
 
-CI authenticates to AWS with GitHub OIDC — no long-lived access keys.
+CI authenticates to AWS using two repo secrets holding an IAM user's credentials
+(Settings → Secrets and variables → Actions → Secrets):
 
-1. **Create an IAM OIDC identity provider** for GitHub in your AWS account
-   (`token.actions.githubusercontent.com`, audience `sts.amazonaws.com`).
-2. **Create an IAM role** the workflow assumes, with a trust policy scoped to
-   this repo (e.g. `repo:jjk30/old-is-gold:ref:refs/heads/main`). Grant it:
-   `s3:PutObject` / `s3:DeleteObject` / `s3:ListBucket` on `oldisgold-frontend`,
-   `cloudfront:CreateInvalidation`, and `lambda:UpdateFunctionCode` on the function.
-3. **Add a repo secret** (Settings → Secrets and variables → Actions → Secrets):
-   - `AWS_DEPLOY_ROLE_ARN` — ARN of the role from step 2.
-4. **Add repo variables** (… → Variables):
-   - `VITE_API_URL` — e.g. `https://gy19tatq9g.execute-api.us-east-1.amazonaws.com/prod`
-   - `LAMBDA_FUNCTION_NAME` — name of the deployed Lambda function.
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
 
-Then delete the old `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` secrets.
+That IAM user needs these permissions:
+
+- `s3:PutObject`, `s3:DeleteObject`, `s3:ListBucket` on the `oldisgold-frontend` bucket
+- `cloudfront:CreateInvalidation`
+- `lambda:UpdateFunctionCode` and `lambda:UpdateFunctionConfiguration` on `oldisgold-api`
+
+`VITE_API_URL` and the Lambda function name (`oldisgold-api`) are hardcoded in the
+workflow, so no repo variables are needed.
+
+> Future hardening: switch to GitHub OIDC (short-lived credentials, no stored
+> access keys).
 
 ### Lambda environment variables (set on the function in AWS)
 
