@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../AuthContext'
-import { apiDelete } from '../utils/api'
-import { auth } from '../firebase'
-import { deleteUser } from 'firebase/auth'
+import React, { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
+import logo from '../assets/logo.webp'
 import './Landing.css'
 
 function Landing() {
-  const navigate = useNavigate()
-  const { user, logout } = useAuth()
+  // Source of truth for logged-in vs logged-out stays exactly as before:
+  // the presence of a userId in localStorage (set by the Login flow).
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [showGoodbye, setShowGoodbye] = useState(false)
-  
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuWrapRef = useRef(null)
+
   const userName = localStorage.getItem('userName') || 'Friend'
 
   useEffect(() => {
@@ -21,122 +17,103 @@ function Landing() {
     setIsLoggedIn(!!userId)
   }, [])
 
-  const handleLogout = async () => {
-    try {
-      await logout()
-    } catch (err) {
-      console.error('Logout error:', err)
+  // Close the "My Workouts" dropdown on outside click or Escape.
+  useEffect(() => {
+    if (!menuOpen) return
+    const onClick = (e) => {
+      if (menuWrapRef.current && !menuWrapRef.current.contains(e.target)) {
+        setMenuOpen(false)
+      }
     }
-    localStorage.clear()
-    setIsLoggedIn(false)
-    setShowSettings(false)
-  }
-
-  const handleDeleteAccount = async () => {
-    // Delete server-side data first; if it fails, don't pretend we succeeded.
-    try {
-      await apiDelete(`/account/${user.uid}`)
-    } catch (err) {
-      console.error('Delete account error:', err)
-      alert('Could not delete your account. Please try again.')
-      return
+    const onKey = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false)
     }
-
-    // Best-effort removal of the Firebase auth account; fall back to sign-out.
-    try {
-      await deleteUser(auth.currentUser)
-    } catch {
-      try { await logout() } catch (_) {}
+    document.addEventListener('click', onClick)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('click', onClick)
+      document.removeEventListener('keydown', onKey)
     }
+  }, [menuOpen])
 
-    setShowDeleteConfirm(false)
-    setShowGoodbye(true)
-
-    setTimeout(() => {
-      localStorage.clear()
-      setIsLoggedIn(false)
-      setShowGoodbye(false)
-    }, 3000)
-  }
+  // Expose the extracted logo asset to CSS so .medallion can paint it.
+  const pageStyle = { '--logo': `url(${logo})` }
 
   return (
-    <div className="landing-page">
-      <header className="landing-header">
-        <div className="logo">Old <span className="gold">Is Gold</span></div>
-        <nav className="nav-buttons">
+    <div className="landing-page" style={pageStyle}>
+      <div className="shell">
+        <header className="topbar">
+          <Link className="brand" to="/">
+            <span className="medallion brand-mark" aria-hidden="true"></span>
+            <span className="wordmark">Old <span className="gold">Is&nbsp;Gold</span></span>
+          </Link>
+
+          {isLoggedIn ? (
+            <nav className="main-nav" aria-label="Primary">
+              <div className="menu-wrap" ref={menuWrapRef}>
+                <button
+                  className="menu-trigger"
+                  id="menuBtn"
+                  aria-haspopup="menu"
+                  aria-expanded={menuOpen}
+                  aria-controls="workouts-menu"
+                  onClick={() => setMenuOpen((o) => !o)}
+                >
+                  My Workouts
+                  <svg className="caret" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+                </button>
+                <div className={`menu${menuOpen ? ' open' : ''}`} id="workouts-menu" role="menu" aria-labelledby="menuBtn">
+                  <div className="menu-user">
+                    <span className="medallion" aria-hidden="true"></span>
+                    <div className="who">
+                      <span className="name">{userName}</span>
+                      <span className="meta">Signed in</span>
+                    </div>
+                  </div>
+                  <div className="menu-sep"></div>
+                  <Link className="menu-item" role="menuitem" to="/progress" onClick={() => setMenuOpen(false)}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 20h18" /><path d="M6 20v-7" /><path d="M11 20V6" /><path d="M16 20v-10" /></svg>
+                    My Progress
+                  </Link>
+                  <Link className="menu-item" role="menuitem" to="/nutrition" onClick={() => setMenuOpen(false)}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 11h16a8 8 0 0 1-16 0z" /><path d="M9 7c0-1.4.9-2.4.9-2.4M13.5 7c0-1.4.9-2.4.9-2.4" /><path d="M4 20h16" /></svg>
+                    Nutrition
+                  </Link>
+                </div>
+              </div>
+              <Link className="nav-link" to="/settings">Settings</Link>
+            </nav>
+          ) : (
+            <nav className="main-nav" aria-label="Primary">
+              <Link className="login-pill" to="/login">Log in</Link>
+            </nav>
+          )}
+        </header>
+
+        <main>
           {isLoggedIn ? (
             <>
-              <Link to="/workout" className="nav-btn primary">My Workouts</Link>
-              <button className="nav-btn settings-trigger" onClick={() => setShowSettings(!showSettings)}>
-                Settings
-              </button>
+              {/* No large center medallion when logged in — the header wordmark carries the brand. */}
+              <p className="eyebrow reveal d1">Welcome back</p>
+              <p className="tagline reveal d2">A fitness program made just for you.</p>
+              <p className="subline reveal d2">Your next session is ready when you are.</p>
+              <Link className="btn-primary reveal d3" to="/workout">Continue Workout</Link>
+              <p className="sub-cta reveal d4">Pick up right where you left off.</p>
             </>
           ) : (
-            <Link to="/login" className="nav-btn">Login</Link>
+            <>
+              <span className="medallion hero-logo reveal d1" role="img" aria-label="Old Is Gold"></span>
+              <p className="tagline reveal d2">A fitness program made just for you.</p>
+              <p className="subline reveal d2">Simple moves, big buttons, and workouts that respect your pace. Made for ages 55 and up.</p>
+              <Link className="btn-primary reveal d3" to="/login">Get Started Free</Link>
+              <p className="sub-cta reveal d4">Already a member? <Link className="text-link" to="/login">Log in</Link></p>
+            </>
           )}
-        </nav>
-      </header>
+        </main>
+      </div>
 
-      {/* Settings Dropdown */}
-      {showSettings && (
-        <div className="settings-dropdown">
-          <div className="settings-header">
-            <span className="settings-user">👤 {userName}</span>
-          </div>
-          <Link to="/progress" className="settings-option" onClick={() => setShowSettings(false)}>
-            📊 My Progress
-          </Link>
-          <Link to="/nutrition" className="settings-option" onClick={() => setShowSettings(false)}>
-            🍽️ Nutrition
-          </Link>
-          <button className="settings-option" onClick={handleLogout}>
-            🚪 Logout
-          </button>
-          <button className="settings-option danger" onClick={() => { setShowSettings(false); setShowDeleteConfirm(true); }}>
-            🗑️ Delete Account
-          </button>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <h2>⚠️ Delete Account?</h2>
-            <p>Are you sure you want to delete your account? Your local data will be cleared, but you can always come back and login again!</p>
-            <div className="modal-buttons">
-              <button className="modal-btn cancel" onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
-              <button className="modal-btn delete" onClick={handleDeleteAccount}>Yes, Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Goodbye Modal */}
-      {showGoodbye && (
-        <div className="modal-overlay">
-          <div className="modal-box goodbye">
-            <span className="goodbye-icon">💛</span>
-            <h2>Thank You for Using Us!</h2>
-            <p>We will wait for you to come back again!</p>
-            <p className="goodbye-sub">Take care of yourself! 🌟</p>
-          </div>
-        </div>
-      )}
-
-      <main className="landing-main">
-        <h1 className="main-title">Old <span className="gold">Is Gold</span></h1>
-        <p className="subtitle">
-          A fitness program designed just for you. Simple exercises,<br />
-          big buttons, and workouts that respect your body.
-        </p>
-        <Link to={isLoggedIn ? "/workout" : "/login"} className="cta-button">
-          {isLoggedIn ? "Continue Workout" : "Get Started Free"}
-        </Link>
-      </main>
-
-      <footer className="landing-footer">
-        <p>Made with ❤️ for seniors</p>
+      <footer>
+        <p className="fmark">Old <span className="gold">Is Gold</span>. Strength and balance for every stage of life.</p>
       </footer>
     </div>
   )
