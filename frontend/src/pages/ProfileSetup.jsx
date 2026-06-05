@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { apiPost } from '../utils/api'
 import './ProfileSetup.css'
-
-const API_URL = 'https://gy19tatq9g.execute-api.us-east-1.amazonaws.com/prod'
 
 function ProfileSetup() {
   const navigate = useNavigate()
@@ -143,11 +142,7 @@ function ProfileSetup() {
         created_at: new Date().toISOString()
       }
 
-      const response = await fetch(`${API_URL}/profile`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profileData)
-      })
+      const response = await apiPost('/profile', profileData)
 
       if (response.ok) {
         localStorage.setItem('userName', formData.name)

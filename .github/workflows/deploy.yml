@@ -4,29 +4,84 @@ on:
   push:
     branches: [main]
 
+env:
+  AWS_REGION: us-east-1
+
 jobs:
-  deploy:
+  deploy-frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      
+
       - name: Build
+        env:
+          # Public API base URL embedded at build time (not a secret), so no
+          # GitHub variable is needed.
+          VITE_API_URL: https://gy19tatq9g.execute-api.us-east-1.amazonaws.com/prod
         run: |
           cd frontend
           npm ci
           npm run build
-      
-      - uses: aws-actions/configure-aws-credentials@v4
+
+      # Using long-lived access-key secrets. Future improvement: switch to
+      # GitHub OIDC role assumption (no static keys) once the IAM role is set up.
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      
+          aws-region: ${{ env.AWS_REGION }}
+
       - name: Deploy to S3
         run: |
           aws s3 sync frontend/dist/ s3://oldisgold-frontend --delete
-          aws cloudfront create-invalidation --distribution-id E1F1M9HXF6IJ7V --paths "/*"
+          aws cloudfront create-invalidation \
+            --distribution-id E1F1M9HXF6IJ7V --paths "/*"
+
+  deploy-lambda:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Package Lambda
+        run: |
+          cd backend
+          mkdir -p build
+          # Install deps as manylinux wheels matching the Lambda runtime
+          # (Python 3.11 on x86_64).
+          pip install \
+            --platform manylinux2014_x86_64 \
+            --target build \
+            --implementation cp \
+            --python-version 3.11 \
+            --only-binary=:all: --upgrade \
+            -r requirements.txt
+          cp lambda_function.py auth.py build/
+          cd build && zip -qr ../lambda.zip . && cd ..
+
+      # Using long-lived access-key secrets. Future improvement: switch to
+      # GitHub OIDC role assumption (no static keys) once the IAM role is set up.
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name oldisgold-api \
+            --zip-file fileb://backend/lambda.zip
+          aws lambda wait function-updated --function-name oldisgold-api
+          aws lambda update-function-configuration \
+            --function-name oldisgold-api \
+            --handler lambda_function.lambda_handler

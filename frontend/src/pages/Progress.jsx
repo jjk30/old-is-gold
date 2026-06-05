@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { apiGet } from '../utils/api'
 import './Progress.css'
-
-const API_URL = 'https://gy19tatq9g.execute-api.us-east-1.amazonaws.com/prod'
 
 const getLocalDateString = (date = new Date()) => {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
@@ -24,8 +23,8 @@ function Progress() {
   useEffect(() => {
     if (!userId) { navigate('/setup'); return }
     Promise.all([
-      fetch(`${API_URL}/progress/${userId}`).then(r => r.ok ? r.json() : []),
-      fetch(`${API_URL}/nutrition/${userId}`).then(r => r.ok ? r.json() : [])
+      apiGet(`/progress/${userId}`).then(r => r.ok ? r.json() : []),
+      apiGet(`/nutrition/${userId}`).then(r => r.ok ? r.json() : [])
     ]).then(([prog, meals]) => {
       setProgressData(Array.isArray(prog) ? prog : [])
       setMealsData(Array.isArray(meals) ? meals : [])

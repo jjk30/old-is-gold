@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { searchExerciseVideo } from '../utils/youtubeApi'
+import { apiGet, apiPost } from '../utils/api'
 import './Workout.css'
-
-const API_URL = 'https://gy19tatq9g.execute-api.us-east-1.amazonaws.com/prod'
 
 const getLocalDateString = () => {
   const now = new Date()
@@ -109,7 +108,7 @@ function Workout() {
 
   useEffect(() => {
     if (!userId) { navigate('/setup'); return }
-    fetch(`${API_URL}/plans/${userId}`).then(r => r.ok ? r.json() : null).then(setPlan).finally(() => setLoading(false))
+    apiGet(`/plans/${userId}`).then(r => r.ok ? r.json() : null).then(setPlan).finally(() => setLoading(false))
   }, [userId, navigate])
 
   const suggestions = step === 1 && searchText.trim().length > 0
@@ -164,11 +163,7 @@ function Workout() {
       }
       
       try {
-        await fetch(`${API_URL}/nutrition`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
+        await apiPost('/nutrition', payload)
       } catch (error) {
         console.error('Error saving meal:', error)
       }
@@ -190,20 +185,16 @@ function Workout() {
     const localDate = getLocalDateString()
     
     try {
-      await fetch(`${API_URL}/progress`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: userId,
-          date: localDate,
-          type: 'workout',
-          workout_completed: true,
-          exercises_completed: completedExercises.length,
-          total_exercises: plan?.exercises?.length || 0,
-          duration: plan?.duration_minutes || 15,
-          calories_burned: burned,
-          exercises: plan?.exercises?.filter((_, i) => completedExercises.includes(i)).map(e => e.name)
-        })
+      await apiPost('/progress', {
+        user_id: userId,
+        date: localDate,
+        type: 'workout',
+        workout_completed: true,
+        exercises_completed: completedExercises.length,
+        total_exercises: plan?.exercises?.length || 0,
+        duration: plan?.duration_minutes || 15,
+        calories_burned: burned,
+        exercises: plan?.exercises?.filter((_, i) => completedExercises.includes(i)).map(e => e.name)
       })
     } catch (error) {
       console.error('Error saving workout:', error)
