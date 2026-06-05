@@ -1,302 +1,438 @@
+/*
+ * Home page — "Old Is Gold" approved redesign.
+ * Presentation only. Tokens are scoped to .landing-page so the new look does
+ * not leak into the other pages, which keep their existing styling.
+ */
 .landing-page {
+  --bg: #15120c;
+  --bg-soft: #1c1810;
+  --panel: #211c12;
+  --edge: rgba(228, 196, 122, 0.18);
+  --ink: #f6f0e2;
+  --ink-soft: #cbc1a8;
+  --ink-faint: #948a76;
+  --gold: #d9b25a;
+  --gold-bright: #ecca7c;
+  --gold-deep: #b58f3e;
+  --gold-ink: #18130a;
+  --cream: #fcfdf7;
+  --danger: #e08274;
+  --radius: 18px;
+  --radius-s: 12px;
+  --maxw: 1120px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a0a 50%, #0a0a0a 100%);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 19px;
+  line-height: 1.6;
   display: flex;
   flex-direction: column;
-  color: #fff;
+  position: relative;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Warm glow + vignette behind the page content. */
+.landing-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 85% -10%, rgba(217, 178, 90, 0.15), rgba(217, 178, 90, 0) 55%),
+    radial-gradient(120% 120% at 50% 120%, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 60%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+}
+
+/* Subtle film grain. */
+.landing-page::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.landing-page .shell {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/*
+ * Medallion: cream-filled circle with the (light-background) logo centred,
+ * ringed in gold. The --logo url is injected from JSX so Vite can hash the asset.
+ */
+.landing-page .medallion {
+  border-radius: 50%;
+  background-color: var(--cream);
+  background-image: var(--logo);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px rgba(217, 178, 90, 0.55);
+}
+
+/* Header */
+.landing-page .topbar {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 26px 0 22px;
+  border-bottom: 1px solid rgba(228, 196, 122, 0.12);
+}
+.landing-page .brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+.landing-page .brand-mark {
+  width: 46px;
+  height: 46px;
+  flex: none;
+}
+.landing-page .wordmark {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 25px;
+  letter-spacing: .01em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.landing-page .wordmark .gold {
+  background: linear-gradient(120deg, var(--gold-deep), var(--gold-bright) 55%, var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.landing-page .main-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.landing-page .nav-link {
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 13px 18px;
+  border-radius: var(--radius-s);
+  transition: color .25s var(--ease), background .25s var(--ease);
+}
+.landing-page .nav-link:hover {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Single "Log in" pill (logged-out header) */
+.landing-page .login-pill {
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(228, 196, 122, 0.4);
+  transition: background .25s var(--ease), border-color .25s var(--ease);
+}
+.landing-page .login-pill:hover {
+  background: rgba(228, 196, 122, 0.08);
+  border-color: rgba(228, 196, 122, 0.7);
+}
+
+/* "My Workouts" dropdown (logged-in header) */
+.landing-page .menu-wrap {
   position: relative;
 }
-
-.landing-header {
-  display: flex;
-  justify-content: space-between;
+.landing-page .menu-trigger {
+  display: inline-flex;
   align-items: center;
-  padding: 1.5rem 3rem;
-}
-
-.logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #fff;
-}
-
-.logo .gold {
-  color: #d4a853;
-}
-
-.nav-buttons {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.nav-btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  text-decoration: none;
+  gap: 10px;
+  font-family: "Hanken Grotesk", sans-serif;
   font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.2s;
-  border: none;
+  font-size: 18px;
+  color: var(--ink);
+  background: transparent;
+  cursor: pointer;
+  padding: 11px 16px 11px 18px;
+  border-radius: var(--radius-s);
+  border: 1px solid rgba(228, 196, 122, 0.4);
+  transition: background .25s var(--ease);
+}
+.landing-page .menu-trigger:hover {
+  background: rgba(228, 196, 122, 0.08);
+}
+.landing-page .menu-trigger .caret {
+  transition: transform .25s var(--ease);
+  color: var(--gold);
+}
+.landing-page .menu-trigger[aria-expanded="true"] .caret {
+  transform: rotate(180deg);
+}
+.landing-page .menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+  width: 288px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  box-shadow: 0 30px 70px -28px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  opacity: 0;
+  transform: translateY(-8px) scale(.98);
+  transform-origin: top right;
+  pointer-events: none;
+  transition: opacity .2s var(--ease), transform .2s var(--ease);
+}
+.landing-page .menu.open {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.landing-page .menu-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 12px 14px;
+}
+.landing-page .menu-user .medallion {
+  width: 44px;
+  height: 44px;
+  flex: none;
+}
+.landing-page .menu-user .who {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+.landing-page .menu-user .name {
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--ink);
+}
+.landing-page .menu-user .meta {
+  font-size: 14px;
+  color: var(--ink-faint);
+}
+.landing-page .menu-sep {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 6px 8px;
+}
+.landing-page .menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  font-family: "Hanken Grotesk", sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--ink);
+  text-decoration: none;
+  text-align: left;
   cursor: pointer;
   background: transparent;
-  color: #ccc;
+  border: none;
+  padding: 13px 12px;
+  border-radius: 10px;
+  transition: background .18s var(--ease);
+}
+.landing-page .menu-item svg {
+  flex: none;
+  color: var(--gold);
+}
+.landing-page .menu-item:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.nav-btn:hover {
-  color: #fff;
-}
-
-.nav-btn.primary {
-  background: transparent;
-  border: 2px solid #d4a853;
-  color: #d4a853;
-}
-
-.nav-btn.primary:hover {
-  background: #d4a853;
-  color: #000;
-}
-
-.nav-btn.logout-btn {
-  color: #888;
-}
-
-.nav-btn.logout-btn:hover {
-  color: #fff;
-  background: #333;
-  border-radius: 8px;
-}
-
-.landing-main {
+/* Hero */
+.landing-page main {
+  position: relative;
+  z-index: 1;
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 2rem;
+  padding: 56px 0 84px;
 }
-
-.main-title {
-  font-size: 4rem;
-  font-weight: 800;
-  margin: 0 0 1.5rem 0;
-  color: #fff;
+.landing-page .hero-logo {
+  width: clamp(220px, 32vw, 300px);
+  height: clamp(220px, 32vw, 300px);
+  margin: 0 auto 40px;
+  box-shadow: 0 0 0 5px var(--bg), 0 0 0 7px rgba(217, 178, 90, 0.55),
+    0 40px 80px -28px rgba(0, 0, 0, 0.75), 0 0 90px -30px rgba(217, 178, 90, 0.35);
 }
-
-.main-title .gold {
-  color: #d4a853;
-}
-
-.subtitle {
-  font-size: 1.25rem;
-  color: #888;
-  margin-bottom: 2.5rem;
-  line-height: 1.8;
-}
-
-.cta-button {
-  display: inline-block;
-  padding: 1.25rem 3rem;
-  background: #d4a853;
-  color: #000;
-  text-decoration: none;
-  border-radius: 12px;
-  font-size: 1.25rem;
+.landing-page .eyebrow {
+  font-family: "Hanken Grotesk", sans-serif;
   font-weight: 700;
-  transition: transform 0.2s, box-shadow 0.2s;
+  font-size: 15px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 0 16px;
+}
+.landing-page .tagline {
+  font-family: "Fraunces", serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(24px, 3.4vw, 34px);
+  line-height: 1.3;
+  color: var(--ink);
+  max-width: 22ch;
+  margin: 0 auto 14px;
+  letter-spacing: -0.01em;
+}
+.landing-page .subline {
+  font-size: 20px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  max-width: 34ch;
+  margin: 0 auto 42px;
 }
 
-.cta-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(212, 168, 83, 0.3);
-}
-
-.landing-footer {
-  padding: 2rem;
-  text-align: center;
-  color: #666;
-}
-
-/* Settings Dropdown */
-.settings-dropdown {
-  position: absolute;
-  top: 80px;
-  right: 3rem;
-  background: #1a1a1a;
-  border: 1px solid #333;
-  border-radius: 12px;
-  padding: 0.5rem;
-  min-width: 220px;
-  z-index: 1000;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-}
-
-.settings-header {
-  padding: 1rem;
-  border-bottom: 1px solid #333;
-  margin-bottom: 0.5rem;
-}
-
-.settings-user {
-  font-weight: 600;
-  color: #d4a853;
-  font-size: 1.1rem;
-}
-
-.settings-option {
-  display: flex;
+/*
+ * Primary button: FLAT solid gold, dark text, soft drop shadow only.
+ * No gradient, no glow, no shiny top edge. Hover lifts 1px and brightens.
+ */
+.landing-page .btn-primary {
+  display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  padding: 0.85rem 1rem;
-  background: transparent;
-  border: none;
-  color: #fff;
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background 0.2s;
-  text-align: left;
+  justify-content: center;
+  font-family: "Hanken Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 21px;
+  color: var(--gold-ink);
   text-decoration: none;
-}
-
-.settings-option:hover {
-  background: #333;
-}
-
-.settings-option.danger {
-  color: #ef4444;
-}
-
-.settings-option.danger:hover {
-  background: #3a1a1a;
-}
-
-/* Modal Overlay */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-}
-
-.modal-box {
-  background: #1a1a1a;
-  border-radius: 20px;
-  padding: 2.5rem;
-  max-width: 450px;
-  width: 90%;
-  text-align: center;
-  border: 1px solid #333;
-  animation: modalIn 0.3s ease;
-}
-
-@keyframes modalIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.modal-box h2 {
-  margin: 0 0 1rem 0;
-  font-size: 1.5rem;
-  color: #fff;
-}
-
-.modal-box p {
-  color: #aaa;
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-}
-
-.modal-buttons {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-}
-
-.modal-btn {
-  padding: 0.85rem 1.75rem;
-  border-radius: 10px;
-  border: none;
-  font-size: 1rem;
-  font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, background 0.2s;
+  border: none;
+  min-height: 68px;
+  padding: 0 56px;
+  border-radius: 16px;
+  background: var(--gold);
+  box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.6);
+  transition: transform .2s var(--ease), background .25s var(--ease);
+}
+.landing-page .btn-primary:hover {
+  transform: translateY(-1px);
+  background: var(--gold-bright);
+}
+.landing-page .btn-primary:active {
+  transform: translateY(0);
+}
+.landing-page .sub-cta {
+  margin-top: 20px;
+  font-size: 16px;
+  color: var(--ink-faint);
+}
+.landing-page .text-link {
+  color: var(--gold);
+  text-decoration: none;
+  font-weight: 600;
+}
+.landing-page .text-link:hover {
+  color: var(--gold-bright);
+  text-decoration: underline;
 }
 
-.modal-btn:hover {
-  transform: scale(1.02);
+/* Footer */
+.landing-page footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  border-top: 1px solid rgba(228, 196, 122, 0.12);
+  padding: 30px 0 44px;
+}
+.landing-page footer .fmark {
+  font-family: "Fraunces", serif;
+  font-size: 18px;
+  color: var(--ink-soft);
+}
+.landing-page footer .fmark .gold {
+  color: var(--gold);
 }
 
-.modal-btn.cancel {
-  background: #333;
-  color: #fff;
+/* Entrance animation */
+.landing-page .reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: landing-rise .9s var(--ease) forwards;
+}
+.landing-page .d1 { animation-delay: .06s; }
+.landing-page .d2 { animation-delay: .20s; }
+.landing-page .d3 { animation-delay: .34s; }
+.landing-page .d4 { animation-delay: .46s; }
+@keyframes landing-rise {
+  to { opacity: 1; transform: none; }
 }
 
-.modal-btn.cancel:hover {
-  background: #444;
+/* Visible gold focus ring */
+.landing-page a:focus-visible,
+.landing-page button:focus-visible {
+  outline: 3px solid var(--gold-bright);
+  outline-offset: 3px;
+  border-radius: 10px;
 }
 
-.modal-btn.delete {
-  background: #ef4444;
-  color: #fff;
-}
-
-.modal-btn.delete:hover {
-  background: #dc2626;
-}
-
-/* Goodbye Modal */
-.modal-box.goodbye {
-  background: linear-gradient(135deg, #1a1a1a, #2a2a1a);
-  border-color: #d4a853;
-}
-
-.goodbye-icon {
-  font-size: 4rem;
-  display: block;
-  margin-bottom: 1rem;
-}
-
-.modal-box.goodbye h2 {
-  color: #d4a853;
-  font-size: 1.75rem;
-}
-
-.modal-box.goodbye p {
-  color: #fff;
-  font-size: 1.25rem;
-}
-
-.goodbye-sub {
-  color: #888 !important;
-  font-size: 1rem !important;
-  margin-bottom: 0 !important;
-}
-
-@media (max-width: 768px) {
-  .landing-header {
-    padding: 1rem 1.5rem;
+@media (prefers-reduced-motion: reduce) {
+  .landing-page .reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
-  
-  .main-title {
-    font-size: 2.5rem;
+  .landing-page * {
+    transition: none !important;
   }
-  
-  .subtitle {
-    font-size: 1rem;
+}
+
+@media (max-width: 560px) {
+  .landing-page {
+    font-size: 18px;
   }
-  
-  .settings-dropdown {
-    right: 1rem;
+  .landing-page .shell {
+    padding: 0 20px;
+  }
+  .landing-page .topbar {
+    padding: 20px 0 16px;
+    gap: 10px;
+  }
+  .landing-page .wordmark {
+    font-size: 21px;
+  }
+  .landing-page .brand-mark {
+    width: 40px;
+    height: 40px;
+  }
+  .landing-page .nav-link {
+    padding: 11px 12px;
+    font-size: 16px;
+  }
+  .landing-page .menu-trigger {
+    font-size: 16px;
+    padding: 10px 12px 10px 14px;
+  }
+  .landing-page .menu {
+    width: min(288px, calc(100vw - 40px));
+  }
+  .landing-page .btn-primary {
+    width: 100%;
+    padding: 0 24px;
   }
 }
