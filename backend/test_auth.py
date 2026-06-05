@@ -32,7 +32,11 @@ KID = "test-kid-1"
 _signing_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
 _attacker_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
 
-# Mock the cert/JWKS fetch: the verifier trusts only our public key under KID.
+# Keep references to the real key-loading functions so the refresh-logic tests
+# below can exercise them, then stub _load_public_keys for the token tests: the
+# verifier trusts only our public key under KID.
+_REAL_LOAD = auth._load_public_keys
+_REAL_FETCH = auth._fetch_public_keys
 auth._load_public_keys = lambda: {KID: _signing_key.public_key()}
 
 # Generic messages the verifier is allowed to return (never echoes token/exception).
@@ -173,6 +177,62 @@ def test_accepts_valid_token():
     claims = auth.verify_token(f"Bearer {tok}")
     assert claims["uid"] == "user-abc-123", "uid must come from verified sub"
     assert claims["sub"] == "user-abc-123"
+
+
+# --------------------------------------------------------------------------- #
+# Key-fetch / refresh hardening
+# --------------------------------------------------------------------------- #
+
+def test_unknown_kid_rate_limits_forced_fetches():
+    """A flood of tokens with an unrecognized kid must trigger AT MOST one network
+    fetch within MIN_REFRESH_INTERVAL — not one per request — and still reject."""
+    fetch_calls = {"n": 0}
+
+    def counting_fetch():
+        # Simulate a real fetch: it updates last_fetch but never learns the bogus
+        # kid (Google doesn't have it).
+        fetch_calls["n"] += 1
+        auth._cert_cache["last_fetch"] = time.time()
+        auth._cert_cache["keys"] = {KID: _signing_key.public_key()}
+        return auth._cert_cache["keys"]
+
+    # Cache has keys (without the bogus kid); last_fetch long ago so the first
+    # miss is allowed to refresh. _load_public_keys stays stubbed (returns {KID}).
+    auth._cert_cache["keys"] = {KID: _signing_key.public_key()}
+    auth._cert_cache["last_fetch"] = 0.0
+    auth._fetch_public_keys = counting_fetch
+    try:
+        bad = make_token(kid="totally-unknown-kid")
+        for _ in range(5):
+            assert_rejected(f"Bearer {bad}", "unknown kid")
+        assert fetch_calls["n"] == 1, (
+            f"expected at most 1 forced fetch, got {fetch_calls['n']}")
+    finally:
+        auth._fetch_public_keys = _REAL_FETCH
+
+
+def test_stale_keys_served_when_refresh_fails():
+    """If a cert refresh raises but keys are already cached, a valid token still
+    verifies (availability: don't fail every login during a transient outage)."""
+    def failing_fetch():
+        raise urllib_error("Google unreachable")
+
+    auth._load_public_keys = _REAL_LOAD          # exercise the real fallback path
+    auth._fetch_public_keys = failing_fetch
+    auth._cert_cache["keys"] = {KID: _signing_key.public_key()}
+    auth._cert_cache["expires_at"] = 0.0          # force a refresh attempt
+    auth._cert_cache["last_fetch"] = 0.0
+    try:
+        claims = auth.verify_token(f"Bearer {make_token()}")
+        assert claims["uid"] == "user-abc-123", "valid token must verify via stale keys"
+    finally:
+        auth._load_public_keys = lambda: {KID: _signing_key.public_key()}
+        auth._fetch_public_keys = _REAL_FETCH
+
+
+def urllib_error(msg):
+    import urllib.error
+    return urllib.error.URLError(msg)
 
 
 if __name__ == "__main__":

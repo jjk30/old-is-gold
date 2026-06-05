@@ -33,8 +33,17 @@ FIREBASE_PROJECT_ID = os.environ.get("FIREBASE_PROJECT_ID", "old-is-gold-be8c8")
 # while still failing closed on genuinely expired / not-yet-valid tokens.
 CLOCK_SKEW_LEEWAY = 60
 
-# Simple in-memory cert cache, reused across warm Lambda invocations.
-_cert_cache = {"keys": {}, "expires_at": 0.0}
+# Minimum seconds between forced cert refetches triggered by an unrecognized
+# `kid`. Without this, anyone spraying tokens with garbage kids could force one
+# outbound fetch to Google's cert endpoint per request (amplification/DoS, and a
+# way to get rate-limited by Google). Tradeoff: too high = slower to recognize a
+# genuine key rotation; too low = weaker DoS protection. 120s sits comfortably in
+# the safe range given Google rotates keys on the order of hours.
+MIN_REFRESH_INTERVAL = 120
+
+# In-memory cert cache, reused across warm Lambda invocations. `last_fetch` is the
+# time of the last actual network fetch (used to rate-limit forced refreshes).
+_cert_cache = {"keys": {}, "expires_at": 0.0, "last_fetch": 0.0}
 
 
 class AuthError(Exception):
@@ -46,12 +55,13 @@ class AuthError(Exception):
         self.status_code = status_code
 
 
-def _load_public_keys():
-    """Fetch and cache Google's public signing keys (kid -> RSA public key)."""
-    now = time.time()
-    if _cert_cache["keys"] and now < _cert_cache["expires_at"]:
-        return _cert_cache["keys"]
+def _fetch_public_keys():
+    """Fetch Google's certs over the network and update the cache.
 
+    Performs the actual HTTP request; raises on any network/parse error. Updates
+    `keys`, `expires_at` (from Cache-Control max-age) and `last_fetch`.
+    """
+    now = time.time()
     req = urllib.request.Request(GOOGLE_CERTS_URL, headers={"Accept": "application/json"})
     with urllib.request.urlopen(req, timeout=5) as resp:
         raw = resp.read()
@@ -76,7 +86,50 @@ def _load_public_keys():
 
     _cert_cache["keys"] = public_keys
     _cert_cache["expires_at"] = now + max_age
+    _cert_cache["last_fetch"] = now
     return public_keys
+
+
+def _load_public_keys():
+    """Return Google's public signing keys, refreshing when the cache expires.
+
+    On a refresh failure (Google unreachable/timeout/rate-limited) we fall back to
+    the cached keys if we have any, rather than failing every login during a
+    transient outage. Tradeoff: a key Google has rotated out could stay trusted
+    slightly longer while Google is unreachable — an acceptable, very low risk
+    versus breaking all auth. Only a cold start with no cached keys re-raises.
+    """
+    now = time.time()
+    if _cert_cache["keys"] and now < _cert_cache["expires_at"]:
+        return _cert_cache["keys"]
+
+    try:
+        return _fetch_public_keys()
+    except Exception as e:
+        if _cert_cache["keys"]:
+            print(f"WARN: cert refresh failed, serving cached keys: {repr(e)}")
+            return _cert_cache["keys"]
+        raise
+
+
+def _refresh_for_unknown_kid():
+    """Force a cert refetch after a `kid` miss, rate-limited to at most once per
+    MIN_REFRESH_INTERVAL. This still picks up genuine key rotation promptly while
+    capping how often bad-kid traffic can trigger an outbound fetch. Returns the
+    current key set (possibly unchanged if a refresh was skipped or failed)."""
+    now = time.time()
+    if now - _cert_cache["last_fetch"] < MIN_REFRESH_INTERVAL:
+        # Too soon since the last fetch — treat the kid as unknown without hitting
+        # the network. Forged/garbage kids are still rejected by the caller.
+        return _cert_cache["keys"]
+    try:
+        return _fetch_public_keys()
+    except Exception as e:
+        # Same stale-key fallback as _load_public_keys.
+        if _cert_cache["keys"]:
+            print(f"WARN: forced cert refresh failed, serving cached keys: {repr(e)}")
+            return _cert_cache["keys"]
+        raise
 
 
 def verify_token(auth_header):
@@ -103,9 +156,10 @@ def verify_token(auth_header):
     public_keys = _load_public_keys()
     public_key = public_keys.get(kid)
     if public_key is None:
-        # Key may have rotated; force a refresh once.
-        _cert_cache["expires_at"] = 0.0
-        public_key = _load_public_keys().get(kid)
+        # kid not known: keys may have rotated. Force a refresh, but rate-limited
+        # so a flood of tokens carrying bogus kids can't trigger one outbound
+        # fetch per request.
+        public_key = _refresh_for_unknown_kid().get(kid)
     if public_key is None:
         raise AuthError("Unknown signing key")
 
