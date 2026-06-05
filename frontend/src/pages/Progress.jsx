@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { apiGet } from '../utils/api'
+import { useAuth } from '../AuthContext'
 import './Progress.css'
 
 const getLocalDateString = (date = new Date()) => {
@@ -9,6 +10,7 @@ const getLocalDateString = (date = new Date()) => {
 
 function Progress() {
   const navigate = useNavigate()
+  const { logout } = useAuth()
   const [progressData, setProgressData] = useState([])
   const [mealsData, setMealsData] = useState([])
   const [loading, setLoading] = useState(true)
@@ -67,7 +69,12 @@ function Progress() {
     ...mealsData.map(m => m.date)
   ])]
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await logout()
+    } catch (err) {
+      console.error('Logout error:', err)
+    }
     localStorage.clear()
     navigate('/')
   }

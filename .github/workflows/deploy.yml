@@ -27,8 +27,7 @@ jobs:
           npm ci
           npm run build
 
-      # Using long-lived access-key secrets. Future improvement: switch to
-      # GitHub OIDC role assumption (no static keys) once the IAM role is set up.
+      # Authenticate to AWS using long-lived access keys stored in repo secrets.
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -67,8 +66,7 @@ jobs:
           cp lambda_function.py auth.py build/
           cd build && zip -qr ../lambda.zip . && cd ..
 
-      # Using long-lived access-key secrets. Future improvement: switch to
-      # GitHub OIDC role assumption (no static keys) once the IAM role is set up.
+      # Authenticate to AWS using long-lived access keys stored in repo secrets.
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
