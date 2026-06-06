@@ -1,62 +1,363 @@
+/*
+ * Login / Sign-up — restyled to match the "Old Is Gold" homepage.
+ * Presentation only; no auth or routing logic lives here.
+ * Tokens are scoped to .login-page so the look does not leak into other
+ * pages, mirroring the approach used by Landing.css.
+ */
 .login-page {
+  --bg: #15120c;
+  --bg-soft: #1c1810;
+  --panel: #211c12;
+  --field: #100d08;
+  --edge: rgba(228, 196, 122, 0.18);
+  --ink: #f6f0e2;
+  --ink-soft: #cbc1a8;
+  --ink-faint: #948a76;
+  --gold: #d9b25a;
+  --gold-bright: #ecca7c;
+  --gold-deep: #b58f3e;
+  --gold-ink: #18130a;
+  --cream: #fcfdf7;
+  --danger: #e08274;
+  --danger-soft: rgba(224, 130, 116, 0.12);
+  --radius: 18px;
+  --radius-s: 12px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+
   min-height: 100vh;
-  background: #0a0a0a;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Hanken Grotesk", sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 48px 20px;
+  position: relative;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
-.login-container { width: 100%; max-width: 420px; }
-.login-brand {
+
+/* Warm glow + vignette behind the card (same recipe as the homepage). */
+.login-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 85% -10%, rgba(217, 178, 90, 0.15), rgba(217, 178, 90, 0) 55%),
+    radial-gradient(120% 120% at 50% 120%, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 60%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+}
+
+.login-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 468px;
+}
+
+/*
+ * Brand: round coin medallion centred above the wordmark.
+ * Identical medallion recipe to Landing.css — cream circle with the logo
+ * painted from the --logo url (injected by JSX), ringed in gold.
+ */
+.login-page .login-brand {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-size: 1.5rem;
-  font-weight: 700;
+  gap: 14px;
   text-decoration: none;
-  margin-bottom: 2rem;
+  margin-bottom: 28px;
 }
-.brand-old { color: #ffffff; }
-.brand-is-gold { color: #FFD700; }
+.login-page .medallion {
+  display: block;
+  border-radius: 50%;
+  background-color: var(--cream);
+  background-image: var(--logo);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px rgba(217, 178, 90, 0.55);
+}
+.login-page .brand-mark {
+  width: 76px;
+  height: 76px;
+  flex: none;
+  box-shadow: 0 0 0 5px var(--bg), 0 0 0 7px rgba(217, 178, 90, 0.5),
+    0 24px 50px -26px rgba(0, 0, 0, 0.7);
+}
+.login-page .wordmark {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: .01em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.login-page .wordmark .gold {
+  background: linear-gradient(120deg, var(--gold-deep), var(--gold-bright) 55%, var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Card: dark panel, thin gold edge, rounded, soft shadow. */
 .login-card {
-  background: #111111;
-  padding: 2.5rem;
-  border-radius: 20px;
-  border: 1px solid #333;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  padding: 40px 36px;
+  box-shadow: 0 40px 90px -34px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(0, 0, 0, 0.2);
 }
-.login-card h1 { font-size: 1.8rem; color: #FFD700; margin-bottom: 0.5rem; text-align: center; }
-.login-subtitle { color: #aaa; text-align: center; margin-bottom: 2rem; }
-.error-message { background: #3d1515; color: #ff6b6b; padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem; font-size: 0.9rem; text-align: center; border: 1px solid #ff6b6b; }
-.form-group { margin-bottom: 1.5rem; }
-.form-group label { display: block; font-weight: 600; color: #fff; margin-bottom: 0.5rem; }
-.form-input { width: 100%; padding: 1rem; border: 2px solid #333; border-radius: 12px; font-size: 1rem; transition: border-color 0.3s; box-sizing: border-box; background: #1a1a1a; color: #fff; }
-.form-input:focus { outline: none; border-color: #FFD700; }
-.form-input::placeholder { color: #666; }
-.btn-full { width: 100%; padding: 1rem; font-size: 1.1rem; }
-.btn-primary { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #000; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3); }
-.btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-.login-switch { margin-top: 1.5rem; text-align: center; color: #aaa; }
-.login-switch button { background: none; border: none; color: #FFD700; font-weight: 600; cursor: pointer; text-decoration: underline; }
+.login-title {
+  font-family: "Fraunces", serif;
+  font-weight: 500;
+  font-style: italic;
+  font-size: 32px;
+  line-height: 1.2;
+  color: var(--ink);
+  text-align: center;
+  margin: 0 0 8px;
+}
+.login-subtitle {
+  color: var(--ink-soft);
+  text-align: center;
+  font-size: 17px;
+  margin: 0 0 28px;
+}
+
+/* Error: soft red panel, only rendered when there is an error. */
+.error-message {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border: 1px solid rgba(224, 130, 116, 0.4);
+  padding: 14px 16px;
+  border-radius: var(--radius-s);
+  margin-bottom: 22px;
+  font-size: 15px;
+  text-align: center;
+}
+
+/* Google button: clean dark button with a thin border (not a heavy block). */
 .btn-google {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: #1a1a1a;
-  border: 2px solid #333;
-  border-radius: 12px;
-  font-size: 1rem;
+  gap: 12px;
+  min-height: 60px;
+  padding: 0 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-s);
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 18px;
   font-weight: 600;
-  color: #fff;
+  color: var(--ink);
   cursor: pointer;
-  transition: all 0.3s;
+  transition: background .25s var(--ease), border-color .25s var(--ease);
 }
-.btn-google:hover { background: #222; border-color: #FFD700; }
-.btn-google:disabled { opacity: 0.7; cursor: not-allowed; }
-.divider { display: flex; align-items: center; margin: 1.5rem 0; }
-.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #333; }
-.divider span { padding: 0 1rem; color: #666; font-size: 0.9rem; }
+.btn-google:hover {
+  background: rgba(228, 196, 122, 0.08);
+  border-color: rgba(228, 196, 122, 0.4);
+}
+.btn-google:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+/* Small white rounded tile holding the 4-color Google "G". */
+.btn-google .g-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--cream);
+  flex: none;
+}
+
+/* "or" divider. */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 22px 0;
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(228, 196, 122, 0.16);
+}
+.divider span {
+  padding: 0 14px;
+  color: var(--ink-faint);
+  font-size: 14px;
+}
+
+/* Inputs: dark inset fields, label above, gold focus ring. */
+.form-group {
+  margin-bottom: 20px;
+}
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+}
+.form-input {
+  width: 100%;
+  height: 62px;
+  padding: 0 18px;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-s);
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 18px;
+  background: var(--field);
+  color: var(--ink);
+  box-sizing: border-box;
+  transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+.form-input::placeholder {
+  color: var(--ink-faint);
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 0 3px rgba(217, 178, 90, 0.25);
+}
+
+/* Password field wrapper + eye toggle (presentation-only show/hide). */
+.password-field {
+  position: relative;
+}
+.password-field .form-input {
+  /* Leave room for the eye toggle on the right. */
+  padding-right: 56px;
+}
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink-faint);
+  cursor: pointer;
+  transition: color .2s var(--ease), background .2s var(--ease);
+}
+.password-toggle:hover {
+  color: var(--gold-bright);
+  background: rgba(228, 196, 122, 0.08);
+}
+
+/*
+ * Primary button: FLAT solid gold, dark text, soft drop shadow only.
+ * No gradient, no glow, no green. Hover lifts 1px and brightens.
+ * Matches the homepage .btn-primary.
+ */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Hanken Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--gold-ink);
+  cursor: pointer;
+  border: none;
+  min-height: 64px;
+  border-radius: 16px;
+  background: var(--gold);
+  box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
+  transition: transform .15s var(--ease), background .2s var(--ease);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  background: var(--gold-bright);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-full {
+  width: 100%;
+}
+
+/* Switch row: muted text with a gold action button. */
+.login-switch {
+  margin-top: 22px;
+  text-align: center;
+  color: var(--ink-faint);
+  font-size: 16px;
+}
+.login-switch button {
+  background: none;
+  border: none;
+  color: var(--gold);
+  font-family: "Hanken Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+}
+.login-switch button:hover {
+  color: var(--gold-bright);
+  text-decoration: underline;
+}
+
+/* Visible gold focus ring (matches the homepage). */
+.login-page a:focus-visible,
+.login-page button:focus-visible,
+.login-page input:focus-visible {
+  outline: 3px solid var(--gold-bright);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+/* Entrance animation — disabled under prefers-reduced-motion below. */
+.login-page .reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: login-rise .8s var(--ease) forwards;
+}
+@keyframes login-rise {
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-page .reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .login-page * {
+    transition: none !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .login-card {
+    padding: 30px 22px;
+  }
+  .login-title {
+    font-size: 28px;
+  }
+  .login-page .brand-mark {
+    width: 66px;
+    height: 66px;
+  }
+}
