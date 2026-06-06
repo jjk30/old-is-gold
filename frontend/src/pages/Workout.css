@@ -317,28 +317,36 @@ input::placeholder {
   border-bottom-color: var(--gold);
 }
 
-/* Gold coin holding a food line-icon. Icon stroke = currentColor (gold-deep) */
+/* food coin: small dark disc, thin gold ring, gold line icon */
 .log-meals .food-coin {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
   box-sizing: border-box;
-  padding: 18%;
+  padding: 0;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: var(--cream);
-  color: var(--gold-deep);
-  box-shadow: 0 0 0 2px var(--gold);
+  background: var(--field);
+  color: var(--gold);
+  border: 1px solid var(--edge);
+  box-shadow: none;
 }
+/* Fixed svg size overrides the component's width="100%" so the icon can't balloon */
+.log-meals .food-coin svg { width: 24px; height: 24px; }
 
 /* Heading: centered default fork-and-knife coin, italic Fraunces title */
 .log-meals .meal-header { text-align: center; margin-bottom: 2rem; }
 .log-meals .meal-heading-coin {
-  display: flex;
-  width: 72px;
-  height: 72px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
   margin: 0 auto 16px;
 }
+.log-meals .meal-heading-coin svg { width: 32px; height: 32px; }
 .log-meals .meal-header h1 {
   font-family: "Fraunces", serif;
   font-style: italic;
@@ -417,12 +425,14 @@ input::placeholder {
 }
 .log-meals .sug-btn:hover { background: rgba(228, 196, 122, 0.08); }
 .log-meals .sug-icon { width: 44px; height: 44px; }
+.log-meals .sug-icon svg { width: 24px; height: 24px; }
 .log-meals .sug-name { color: var(--ink); }
 .log-meals .sug-cal { color: var(--gold); font-weight: 600; }
 
 /* Step 2: picked food */
 .log-meals .picked-header { border-bottom-color: var(--edge); }
-.log-meals .picked-icon { width: 64px; height: 64px; }
+.log-meals .picked-icon { width: 60px; height: 60px; }
+.log-meals .picked-icon svg { width: 30px; height: 30px; }
 .log-meals .picked-name { color: var(--ink); }
 .log-meals .back-btn {
   border: 1px solid var(--edge);
@@ -460,6 +470,7 @@ input::placeholder {
 }
 .log-meals .meal-row { background: var(--field); border-radius: var(--radius-s); }
 .log-meals .mr-icon { width: 44px; height: 44px; }
+.log-meals .mr-icon svg { width: 24px; height: 24px; }
 .log-meals .mr-info strong { color: var(--ink); }
 .log-meals .mr-info span { color: var(--ink-faint); }
 .log-meals .mr-cal { color: var(--gold); }
