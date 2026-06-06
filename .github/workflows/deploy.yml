@@ -4,65 +4,84 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   AWS_REGION: us-east-1
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+              - '.github/workflows/deploy.yml'
+            backend:
+              - 'backend/**'
+              - '.github/workflows/deploy.yml'
+
   deploy-frontend:
+    needs: changes
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
       - name: Build
         env:
-          # Public API base URL embedded at build time (not a secret), so no
-          # GitHub variable is needed.
           VITE_API_URL: https://gy19tatq9g.execute-api.us-east-1.amazonaws.com/prod
         run: |
           cd frontend
           npm ci
           npm run build
-
-      # Authenticate to AWS using long-lived access keys stored in repo secrets.
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-
-      - name: Deploy to S3
+      - name: Deploy to S3 and invalidate CloudFront (with retry)
         run: |
-          # Hashed assets (filenames change every build) are safe to cache forever.
-          aws s3 sync frontend/dist/ s3://oldisgold-frontend --delete \
-            --exclude index.html \
-            --cache-control "public, max-age=31536000, immutable"
-          # index.html must NOT be cached, so returning users always get the latest
-          # build (which points at the newest hashed assets).
-          aws s3 cp frontend/dist/index.html s3://oldisgold-frontend/index.html \
-            --cache-control "no-cache"
-          aws cloudfront create-invalidation \
-            --distribution-id E1F1M9HXF6IJ7V --paths "/*"
+          deploy() {
+            aws s3 sync frontend/dist/ s3://oldisgold-frontend --delete \
+              --exclude index.html \
+              --cache-control "public, max-age=31536000, immutable" && \
+            aws s3 cp frontend/dist/index.html s3://oldisgold-frontend/index.html \
+              --cache-control "no-cache" && \
+            aws cloudfront create-invalidation \
+              --distribution-id E1F1M9HXF6IJ7V --paths "/*"
+          }
+          for attempt in 1 2 3; do
+            if deploy; then echo "Frontend deploy succeeded (attempt $attempt)"; exit 0; fi
+            echo "Attempt $attempt failed; retrying in 15s..."; sleep 15
+          done
+          echo "Frontend deploy failed after 3 attempts"; exit 1
 
   deploy-lambda:
+    needs: changes
+    if: ${{ needs.changes.outputs.backend == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
       - name: Package Lambda
         run: |
           cd backend
           mkdir -p build
-          # Install deps as manylinux wheels matching the Lambda runtime
-          # (Python 3.11 on x86_64).
           pip install \
             --platform manylinux2014_x86_64 \
             --target build \
@@ -72,21 +91,25 @@ jobs:
             -r requirements.txt
           cp lambda_function.py auth.py ratelimit.py build/
           cd build && zip -qr ../lambda.zip . && cd ..
-
-      # Authenticate to AWS using long-lived access keys stored in repo secrets.
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-
-      - name: Deploy Lambda
+      - name: Deploy Lambda (with retry)
         run: |
-          aws lambda update-function-code \
-            --function-name oldisgold-api \
-            --zip-file fileb://backend/lambda.zip
-          aws lambda wait function-updated --function-name oldisgold-api
-          aws lambda update-function-configuration \
-            --function-name oldisgold-api \
-            --handler lambda_function.lambda_handler
+          deploy() {
+            aws lambda update-function-code \
+              --function-name oldisgold-api \
+              --zip-file fileb://backend/lambda.zip && \
+            aws lambda wait function-updated --function-name oldisgold-api && \
+            aws lambda update-function-configuration \
+              --function-name oldisgold-api \
+              --handler lambda_function.lambda_handler
+          }
+          for attempt in 1 2 3; do
+            if deploy; then echo "Lambda deploy succeeded (attempt $attempt)"; exit 0; fi
+            echo "Attempt $attempt failed; retrying in 15s..."; sleep 15
+          done
+          echo "Lambda deploy failed after 3 attempts"; exit 1
