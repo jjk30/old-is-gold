@@ -4,6 +4,7 @@ import { apiGet, apiDelete } from '../utils/api'
 import { useAuth } from '../AuthContext'
 import { auth } from '../firebase'
 import { deleteUser } from 'firebase/auth'
+import logo from '../assets/logo.webp'
 import './Progress.css'
 
 const getLocalDateString = (date = new Date()) => {
@@ -140,18 +141,19 @@ function Progress() {
   if (loading) return <div className="loading-screen"><div className="spinner"></div></div>
 
   return (
-    <div className="progress-page">
+    <div className="progress-page" style={{ '--logo': `url(${logo})` }}>
       <header className="progress-header">
+        {/* Brand: coin medallion + wordmark (same medallion pattern as Landing). */}
         <Link to="/" className="brand">
-          <span className="logo-og"><span className="logo-o">O</span><span className="logo-g">G</span></span>
-          <span className="brand-old">Old</span> <span className="brand-gold">Is Gold</span>
+          <span className="medallion brand-mark" aria-hidden="true"></span>
+          <span className="wordmark">Old <span className="gold">Is&nbsp;Gold</span></span>
         </Link>
         <nav className="nav-links">
           <Link to="/nutrition">Nutrition</Link>
           <Link to="/workout">Workout</Link>
           <Link to="/progress" className="active">Progress</Link>
           <div className="settings-container" style={{position: 'relative'}}>
-            <button className="settings-btn" onClick={() => setShowSettings(!showSettings)}>⚙️</button>
+            <button className="settings-btn" aria-label="Settings" onClick={() => setShowSettings(!showSettings)}><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1v.2a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1A2 2 0 1 1 7 4.6l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1h.2a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></button>
             {showSettings && (
               <div className="settings-dropdown">
                 <div className="settings-header">
@@ -170,9 +172,9 @@ function Progress() {
           <div className="panel-header">
             <h1>Daily Summary</h1>
             <div className="date-nav">
-              <button className="date-btn" onClick={() => changeDate(-1)}>← Prev</button>
+              <button className="date-btn" onClick={() => changeDate(-1)}><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Prev</button>
               <span className="current-date">{formatDisplayDate(selectedDate)}</span>
-              <button className="date-btn" onClick={() => changeDate(1)} disabled={isToday}>Next →</button>
+              <button className="date-btn" onClick={() => changeDate(1)} disabled={isToday}>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
             </div>
           </div>
 
@@ -247,7 +249,14 @@ function Progress() {
         </div>
 
         <div className="right-panel">
-          <h2>Workouts Today</h2>
+          <div className="rp-head">
+            <h2>Workouts Today</h2>
+            {/* Apple-style calendar badge in our gold/black colors. */}
+            <div className="cal-badge">
+              <div className="cb-top">{today.toLocaleDateString('en-US',{weekday:'short'})}</div>
+              <div className="cb-day">{today.getDate()}</div>
+            </div>
+          </div>
           {allExercises.length === 0 && dayWorkouts.length === 0 ? (
             <div className="no-workouts">
               <p>No workouts yet today</p>
@@ -259,7 +268,7 @@ function Progress() {
                 <div key={i} className="workout-item">
                   <div>
                     <span className="workout-title">{ex.name}</span>
-                    <span className="workout-status">✓ Completed</span>
+                    <span className="workout-status">Completed</span>
                   </div>
                   <div className="workout-meta">
                     <span className="workout-duration">{ex.duration} min</span>
@@ -278,7 +287,7 @@ function Progress() {
                 <div key={i} className="workout-item">
                   <div>
                     <span className="workout-title">Workout Session</span>
-                    <span className="workout-status">✓ {w.exercises_completed || 0} exercises</span>
+                    <span className="workout-status">{w.exercises_completed || 0} exercises</span>
                   </div>
                   <div className="workout-meta">
                     <span className="workout-duration">{w.duration || 15} min</span>
@@ -300,7 +309,7 @@ function Progress() {
                   <button key={i} className={`day-cell ${hasData ? 'has-data' : ''} ${isSelected ? 'selected' : ''}`} onClick={() => setSelectedDate(d)}>
                     <span className="day-name">{d.toLocaleDateString('en-US', { weekday: 'short' })}</span>
                     <span className="day-num">{d.getDate()}</span>
-                    {hasData && <span className="day-dot">●</span>}
+                    {hasData && <span className="day-dot"></span>}
                   </button>
                 )
               })}
@@ -325,7 +334,6 @@ function Progress() {
       {showGoodbye && (
         <div className="modal-overlay">
           <div className="modal-box goodbye">
-            <span className="goodbye-icon">💛</span>
             <h2>Goodbye!</h2>
             <p>Thank you for using Old Is Gold. Take care!</p>
           </div>
