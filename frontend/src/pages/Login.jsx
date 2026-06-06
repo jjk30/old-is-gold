@@ -13,6 +13,8 @@ function Login() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [name, setName] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -77,6 +79,16 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    if (isSignUp) {
+      if (!allPasswordChecksPass) {
+        setError('Please meet all the password requirements below.')
+        return
+      }
+      if (password !== confirmPassword) {
+        setError('Passwords do not match')
+        return
+      }
+    }
     setLoading(true)
     try {
       if (isSignUp) {
@@ -118,6 +130,16 @@ function Login() {
       setLoading(false)
     }
   }
+
+  // Live sign-up password rules — recomputed every render (i.e. every
+  // keystroke) so the checklist below stays in sync with the field.
+  const passwordChecks = [
+    { label: 'At least 12 characters', met: password.length >= 12 },
+    { label: 'At least one letter', met: /[A-Za-z]/.test(password) },
+    { label: 'At least one number', met: /[0-9]/.test(password) },
+    { label: 'At least one symbol (like ! ? # @)', met: /[^A-Za-z0-9]/.test(password) },
+  ]
+  const allPasswordChecksPass = passwordChecks.every(c => c.met)
 
   // Expose the extracted logo asset to CSS so .medallion can paint it
   // (same pattern Landing uses; lets Vite hash the asset).
@@ -188,18 +210,61 @@ function Login() {
                 >
                   {showPassword ? (
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                      <path d="M1 1l22 22" />
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
                     </svg>
                   ) : (
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx="12" cy="12" r="3" />
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                      <path d="M1 1l22 22" />
                     </svg>
                   )}
                 </button>
               </div>
+              {isSignUp && (
+                <div className="reqs">
+                  {passwordChecks.map((c, i) => (
+                    <div key={i} className={`req ${c.met ? 'met' : ''}`}>
+                      <span className="ic">
+                        {c.met && (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12.5l4 4 10-10" /></svg>
+                        )}
+                      </span>
+                      {c.label}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+            {isSignUp && (
+              <div className="form-group">
+                <label htmlFor="login-confirm">Confirm Password</label>
+                <div className="password-field">
+                  <input
+                    id="login-confirm"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Re-enter your password"
+                    className="form-input"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowConfirmPassword((v) => !v)}
+                    aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                    aria-pressed={showConfirmPassword}
+                  >
+                    {showConfirmPassword ? (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+                    ) : (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" /><path d="M1 1l22 22" /></svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
             <button type="submit" className="btn-primary btn-full" disabled={loading}>
               {loading ? 'Please wait...' : (isSignUp ? 'Create Account' : 'Sign In')}
             </button>
