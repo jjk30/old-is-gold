@@ -415,3 +415,331 @@
   color: #d4a853;
   font-weight: 600;
 }
+
+/* ============================================================================
+ * Progress page redesign — scoped under .progress-page. Reuses the site's
+ * gold-on-dark tokens + Fraunces / Hanken Grotesk and overrides every
+ * green / orange / pink / red color rule above with enough specificity.
+ * ========================================================================== */
+.progress-page {
+  --bg: #15120c;
+  --bg-soft: #1c1810;
+  --panel: #211c12;
+  --field: #100d08;
+  --edge: rgba(228, 196, 122, 0.18);
+  --ink: #f6f0e2;
+  --ink-soft: #cbc1a8;
+  --ink-faint: #948a76;
+  --gold: #d9b25a;
+  --gold-bright: #ecca7c;
+  --gold-deep: #b58f3e;
+  --gold-ink: #18130a;
+  --cream: #fcfdf7;
+  --danger: #e08274;
+  --danger-soft: rgba(224, 130, 116, 0.12);
+  --radius: 16px;
+  --radius-s: 12px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+  color: var(--ink);
+  font-family: "Hanken Grotesk", sans-serif;
+}
+
+/* Header + brand medallion. Brand link must NOT inherit the global blue link. */
+.progress-page .progress-header {
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--edge);
+}
+.progress-page .brand,
+.progress-page .brand:hover {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.progress-page .medallion {
+  display: block;
+  border-radius: 50%;
+  background-color: var(--cream);
+  background-image: var(--logo);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px rgba(217, 178, 90, 0.55);
+}
+.progress-page .brand-mark { width: 42px; height: 42px; flex: none; }
+.progress-page .wordmark {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 23px;
+  letter-spacing: .01em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.progress-page .wordmark .gold {
+  background: linear-gradient(120deg, var(--gold-deep), var(--gold-bright) 55%, var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Nav: muted links, active gold underline (not a pill) */
+.progress-page .nav-links a {
+  color: var(--ink-soft);
+  background: transparent;
+  text-decoration: none;
+  border-radius: 0;
+  padding: 8px 4px;
+  margin: 0 8px;
+  border-bottom: 2px solid transparent;
+}
+.progress-page .nav-links a:hover { color: var(--gold-bright); background: transparent; }
+.progress-page .nav-links a.active {
+  background: transparent;
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+/* Settings button (gold gear) + themed dropdown */
+.progress-page .settings-btn { color: var(--ink-soft); }
+.progress-page .settings-btn:hover { background: rgba(228, 196, 122, 0.08); color: var(--gold-bright); }
+.progress-page .settings-dropdown {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+}
+.progress-page .settings-header { border-bottom-color: var(--edge); }
+.progress-page .settings-user {
+  color: var(--gold);
+  font-family: "Fraunces", serif;
+  font-style: italic;
+}
+.progress-page .settings-option { color: var(--ink); }
+.progress-page .settings-option:hover { background: rgba(228, 196, 122, 0.08); }
+.progress-page .settings-option.danger { color: var(--danger); }
+.progress-page .settings-option.danger:hover { background: var(--danger-soft); }
+
+/* Panels */
+.progress-page .left-panel,
+.progress-page .right-panel {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+}
+.progress-page .panel-header { border-bottom-color: var(--edge); }
+.progress-page .panel-header h1 {
+  color: var(--ink);
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* Date navigation */
+.progress-page .date-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--field);
+  color: var(--ink-soft);
+  border: 1px solid var(--edge);
+}
+.progress-page .date-btn:hover:not(:disabled) {
+  background: rgba(228, 196, 122, 0.08);
+  color: var(--gold-bright);
+  border-color: var(--gold);
+}
+.progress-page .current-date { color: var(--gold); }
+
+/* Daily Summary calorie numbers — by POSITION so the dynamic Net class
+   (red/green/orange) is always gold: Eaten + Net gold, Burned cream. This
+   removes all green/orange/red here regardless of the class on the element. */
+.progress-page .calories-display {
+  background: var(--field);
+  border: 1px solid var(--edge);
+}
+.progress-page .cal-number { font-family: "Fraunces", serif; font-weight: 600; }
+.progress-page .calories-display > .cal-item:nth-child(1) .cal-number { color: var(--gold-bright); }
+.progress-page .calories-display > .cal-item:nth-child(3) .cal-number { color: var(--ink); }
+.progress-page .calories-display > .cal-item:nth-child(5) .cal-number { color: var(--gold-bright); }
+.progress-page .cal-label { color: var(--ink-faint); }
+.progress-page .cal-separator { color: var(--ink-faint); }
+
+/* Stat tiles */
+.progress-page .stat-box {
+  background: var(--field);
+  border: 1px solid var(--edge);
+}
+.progress-page .stat-num { color: var(--gold); font-family: "Fraunces", serif; }
+.progress-page .stat-label { color: var(--ink-faint); }
+
+/* Macros — single gold gradient for all three bars (no green/orange/pink) */
+.progress-page .macros-section {
+  background: var(--field);
+  border: 1px solid var(--edge);
+}
+.progress-page .macros-section h3 { color: var(--ink); }
+.progress-page .macro-name { color: var(--ink-soft); }
+.progress-page .macro-track { background: rgba(255, 255, 255, 0.06); }
+.progress-page .macro-fill.protein,
+.progress-page .macro-fill.carbs,
+.progress-page .macro-fill.fat {
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold-bright));
+}
+.progress-page .macro-value { color: var(--gold); }
+
+/* Meals Today */
+.progress-page .meals-section {
+  background: var(--field);
+  border: 1px solid var(--edge);
+}
+.progress-page .meals-section h3 { color: var(--ink); }
+.progress-page .meal-item {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  color: var(--ink);
+}
+.progress-page .meal-cal { color: var(--gold); }
+.progress-page .no-data { color: var(--ink-faint); }
+
+/* Workouts Today header + Apple-style calendar badge */
+.progress-page .rp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid var(--edge);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.progress-page .right-panel h2 {
+  color: var(--gold);
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 500;
+  margin: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.progress-page .cal-badge {
+  width: 60px;
+  flex: none;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--gold);
+  background: var(--field);
+  text-align: center;
+  box-shadow: 0 4px 14px -10px rgba(0, 0, 0, 0.6);
+}
+.progress-page .cb-top {
+  background: var(--gold);
+  color: var(--gold-ink);
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 0;
+}
+.progress-page .cb-day {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  color: var(--gold-bright);
+  font-size: 26px;
+  line-height: 1;
+  padding: 6px 0 8px;
+}
+
+/* Workout list rows (no green) */
+.progress-page .workout-item {
+  background: var(--field);
+  border: 1px solid var(--edge);
+}
+.progress-page .workout-item:hover { border-color: var(--gold); }
+.progress-page .workout-title { color: var(--ink); }
+.progress-page .workout-status { color: var(--gold); }
+.progress-page .workout-duration { color: var(--ink-soft); }
+.progress-page .workout-cal { color: var(--gold); }
+.progress-page .workout-total {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  color: var(--gold);
+}
+.progress-page .no-workouts { color: var(--ink-faint); }
+
+/* Start Workout: flat solid-gold button */
+.progress-page .start-btn {
+  background: var(--gold);
+  color: var(--gold-ink);
+  border-radius: 14px;
+  font-weight: 700;
+  box-shadow: 0 4px 14px -10px rgba(0, 0, 0, 0.55);
+}
+.progress-page .start-btn:hover { background: var(--gold-bright); }
+
+/* Last 7 Days */
+.progress-page .weekly-overview {
+  background: var(--field);
+  border: 1px solid var(--edge);
+}
+.progress-page .weekly-overview h3 { color: var(--ink); }
+.progress-page .day-cell {
+  background: var(--panel);
+  border: 2px solid transparent;
+}
+.progress-page .day-cell:hover { border-color: var(--edge); }
+.progress-page .day-cell.selected {
+  border-color: var(--gold);
+  background: rgba(228, 196, 122, 0.08);
+}
+.progress-page .day-name { color: var(--ink-faint); }
+.progress-page .day-num { color: var(--ink); }
+.progress-page .day-cell.has-data .day-num { color: var(--gold); }
+.progress-page .day-cell.selected .day-num { color: var(--gold); }
+/* Empty span styled as a small gold activity dot (replaces the ● char) */
+.progress-page .day-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin: 5px auto 0;
+}
+
+/* Modals */
+.progress-page .modal-box {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+}
+.progress-page .modal-box h2 {
+  color: var(--ink);
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 500;
+}
+.progress-page .modal-box p { color: var(--ink-soft); }
+.progress-page .modal-btn.cancel {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ink);
+  border: 1px solid var(--edge);
+}
+.progress-page .modal-btn.cancel:hover { background: rgba(255, 255, 255, 0.1); }
+.progress-page .modal-btn.delete { background: var(--danger); color: #2a120d; }
+.progress-page .modal-btn.delete:hover { background: var(--danger); filter: brightness(1.06); }
+.progress-page .modal-box.goodbye {
+  background: var(--panel);
+  border-color: var(--gold);
+}
+.progress-page .modal-box.goodbye h2 { color: var(--gold); }
+.progress-page .modal-box.goodbye p { color: var(--ink); }
+
+/* Accessibility: visible gold focus ring; respect reduced motion */
+.progress-page a:focus-visible,
+.progress-page button:focus-visible {
+  outline: 3px solid var(--gold-bright);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .progress-page *,
+  .progress-page *::before,
+  .progress-page *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
