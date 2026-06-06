@@ -238,3 +238,285 @@ input::placeholder {
 .safety-tip .safety-title {
   color: #ef4444 !important;
 }
+
+/* ============================================================================
+ * "Log Your Meals" redesign — scoped entirely under .log-meals so the
+ * workout/exercises view (which has no .log-meals class) is untouched.
+ * Reuses the site's gold-on-dark tokens + Fraunces / Hanken Grotesk fonts.
+ * Some rules carry !important only to defeat the global white-input rules
+ * above; specificity (the .log-meals prefix) handles the rest.
+ * ========================================================================== */
+.log-meals {
+  --bg: #15120c;
+  --bg-soft: #1c1810;
+  --panel: #211c12;
+  --field: #100d08;
+  --edge: rgba(228, 196, 122, 0.18);
+  --ink: #f6f0e2;
+  --ink-soft: #cbc1a8;
+  --ink-faint: #948a76;
+  --gold: #d9b25a;
+  --gold-bright: #ecca7c;
+  --gold-deep: #b58f3e;
+  --gold-ink: #18130a;
+  --cream: #fcfdf7;
+  --danger: #e08274;
+  --danger-soft: rgba(224, 130, 116, 0.12);
+  --radius: 16px;
+  --radius-s: 12px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+  color: var(--ink);
+  font-family: "Hanken Grotesk", sans-serif;
+}
+
+/* Header + brand medallion (cream circle ringed in gold, same as Landing) */
+.log-meals .workout-header {
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--edge);
+}
+.log-meals .brand { gap: 14px; }
+.log-meals .medallion {
+  display: block;
+  border-radius: 50%;
+  background-color: var(--cream);
+  background-image: var(--logo);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px rgba(217, 178, 90, 0.55);
+}
+.log-meals .brand-mark { width: 42px; height: 42px; flex: none; }
+.log-meals .wordmark {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 23px;
+  letter-spacing: .01em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.log-meals .wordmark .gold {
+  background: linear-gradient(120deg, var(--gold-deep), var(--gold-bright) 55%, var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Nav: muted links, active gets a gold underline (not a pill) */
+.log-meals .nav-link {
+  color: var(--ink-soft);
+  border-radius: 0;
+  padding: 8px 4px;
+  margin: 0 12px;
+  border-bottom: 2px solid transparent;
+}
+.log-meals .nav-link:hover { color: var(--gold-bright); }
+.log-meals .nav-link.active {
+  background: transparent;
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+/* Gold coin holding a food line-icon. Icon stroke = currentColor (gold-deep) */
+.log-meals .food-coin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  box-sizing: border-box;
+  padding: 18%;
+  border-radius: 50%;
+  background: var(--cream);
+  color: var(--gold-deep);
+  box-shadow: 0 0 0 2px var(--gold);
+}
+
+/* Heading: centered default fork-and-knife coin, italic Fraunces title */
+.log-meals .meal-header { text-align: center; margin-bottom: 2rem; }
+.log-meals .meal-heading-coin {
+  display: flex;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 16px;
+}
+.log-meals .meal-header h1 {
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 34px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.log-meals .meal-header p { color: var(--ink-soft); font-size: 18px; }
+
+/* Meal-type buttons: selected = solid gold, others = dark */
+.log-meals .meal-type-section > label { color: var(--ink-faint); }
+.log-meals .meal-type-btn {
+  padding: 12px 22px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+.log-meals .meal-type-btn:hover { border-color: var(--gold); color: var(--ink); }
+.log-meals .meal-type-btn.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--gold-ink);
+}
+
+/* Food card */
+.log-meals .food-input-card {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+}
+.log-meals .step-search label,
+.log-meals .qty-section label { color: var(--ink-faint); }
+
+/* Dark inset inputs + gold focus ring. !important defeats the global
+   white-input rules defined earlier in this file. */
+.log-meals .form-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px 18px;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-s);
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 18px;
+  background: var(--field) !important;
+  color: var(--ink) !important;
+  transition: border-color .18s var(--ease), box-shadow .18s var(--ease);
+}
+.log-meals .form-input::placeholder { color: var(--ink-faint) !important; }
+.log-meals .form-input:focus {
+  outline: none;
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 0 3px rgba(217, 178, 90, 0.25);
+}
+.log-meals .qty-input {
+  width: 160px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* Suggestions list */
+.log-meals .suggestions-box {
+  background: var(--field);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-s);
+}
+.log-meals .sug-btn {
+  gap: 14px;
+  border-bottom-color: rgba(228, 196, 122, 0.12);
+  color: var(--ink);
+}
+.log-meals .sug-btn:hover { background: rgba(228, 196, 122, 0.08); }
+.log-meals .sug-icon { width: 44px; height: 44px; }
+.log-meals .sug-name { color: var(--ink); }
+.log-meals .sug-cal { color: var(--gold); font-weight: 600; }
+
+/* Step 2: picked food */
+.log-meals .picked-header { border-bottom-color: var(--edge); }
+.log-meals .picked-icon { width: 64px; height: 64px; }
+.log-meals .picked-name { color: var(--ink); }
+.log-meals .back-btn {
+  border: 1px solid var(--edge);
+  color: var(--ink-soft);
+  border-radius: 999px;
+}
+.log-meals .back-btn:hover { border-color: var(--gold); color: var(--gold-bright); }
+.log-meals .unit-pill {
+  background: var(--gold);
+  color: var(--gold-ink);
+  border-radius: 999px;
+}
+
+/* Nutrition grid (keep macro accents; theme the surfaces + calories) */
+.log-meals .nut-box {
+  background: var(--field);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-s);
+}
+.log-meals .nut-lbl { color: var(--ink-faint); }
+.log-meals .nut-box.cal .nut-val { color: var(--gold); }
+
+/* Today's meals list */
+.log-meals .meals-summary {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+}
+.log-meals .meals-summary h3 {
+  color: var(--gold);
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 22px;
+}
+.log-meals .meal-row { background: var(--field); border-radius: var(--radius-s); }
+.log-meals .mr-icon { width: 44px; height: 44px; }
+.log-meals .mr-info strong { color: var(--ink); }
+.log-meals .mr-info span { color: var(--ink-faint); }
+.log-meals .mr-cal { color: var(--gold); }
+.log-meals .mr-mac { color: var(--ink-faint); }
+.log-meals .mr-del {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--ink-faint);
+}
+.log-meals .mr-del:hover { color: var(--danger); background: var(--danger-soft); }
+.log-meals .totals-bar { border-top-color: var(--edge); }
+.log-meals .totals-bar > span:first-child { color: var(--ink-soft); }
+.log-meals .tot-cal { color: var(--gold); }
+.log-meals .tot-mac { color: var(--ink-faint); }
+
+/* Buttons: flat solid-gold primary, ghost/outline secondary (Skip) */
+.log-meals .btn-primary {
+  background: var(--gold);
+  color: var(--gold-ink);
+  border-radius: 14px;
+  font-family: "Hanken Grotesk", sans-serif;
+  font-weight: 700;
+  box-shadow: 0 4px 14px -10px rgba(0, 0, 0, 0.55);
+}
+.log-meals .btn-primary:hover:not(:disabled) {
+  background: var(--gold-bright);
+  transform: none;
+  box-shadow: 0 4px 14px -10px rgba(0, 0, 0, 0.55);
+}
+.log-meals .btn-primary:disabled { opacity: .5; }
+.log-meals .btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--edge);
+}
+.log-meals .btn-secondary:hover {
+  border-color: var(--gold-bright);
+  color: var(--gold-bright);
+  background: rgba(228, 196, 122, 0.08);
+}
+
+/* Accessibility: visible gold focus ring; respect reduced motion */
+.log-meals a:focus-visible,
+.log-meals button:focus-visible,
+.log-meals input:focus-visible {
+  outline: 3px solid var(--gold-bright);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .log-meals *,
+  .log-meals *::before,
+  .log-meals *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

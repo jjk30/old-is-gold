@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { searchExerciseVideo } from '../utils/youtubeApi'
 import { apiGet, apiPost } from '../utils/api'
+import logo from '../assets/logo.webp'
+import FoodIcon, { DefaultFoodIcon } from '../components/FoodIcon'
 import './Workout.css'
 
 const getLocalDateString = () => {
@@ -208,15 +210,33 @@ function Workout() {
 
   if (screen === 'meals') {
     return (
-      <div className="workout-page">
-        <header className="workout-header"><div className="header-content"><Link to="/" className="brand"><span className="logo-og"><span className="logo-o">O</span><span className="logo-g">G</span></span> <span className="brand-old">Old</span> <span className="brand-gold">Is Gold</span></Link><nav className="header-nav"><Link to="/workout" className="nav-link active">Today</Link><Link to="/nutrition" className="nav-link">Nutrition</Link><Link to="/progress" className="nav-link">Progress</Link></nav></div></header>
+      <div className="workout-page log-meals" style={{ '--logo': `url(${logo})` }}>
+        {/* Brand header: coin medallion + wordmark (same medallion pattern as Landing). */}
+        <header className="workout-header">
+          <div className="header-content">
+            <Link to="/" className="brand">
+              <span className="medallion brand-mark" aria-hidden="true"></span>
+              <span className="wordmark">Old <span className="gold">Is&nbsp;Gold</span></span>
+            </Link>
+            <nav className="header-nav">
+              <Link to="/workout" className="nav-link active">Today</Link>
+              <Link to="/nutrition" className="nav-link">Nutrition</Link>
+              <Link to="/progress" className="nav-link">Progress</Link>
+            </nav>
+          </div>
+        </header>
         <main className="workout-main">
           <div className="container">
-            <div className="meal-header"><h1>🍽️ Log Your Meals</h1><p>Tell us what you ate and we'll estimate the nutrition</p></div>
+            {/* Heading: fork-and-knife default icon in a gold coin, then title + subtitle. */}
+            <div className="meal-header">
+              <span className="meal-heading-coin food-coin" aria-hidden="true"><DefaultFoodIcon /></span>
+              <h1>Log your meals</h1>
+              <p>Tell us what you ate and we'll estimate the nutrition</p>
+            </div>
             <div className="meal-type-section">
               <label>Meal Type</label>
               <div className="meal-type-buttons">
-                {MEAL_TYPES.map(t => <button key={t.id} className={`meal-type-btn ${mealType === t.id ? 'active' : ''}`} onClick={() => setMealType(t.id)}><span>{t.icon}</span><span>{t.name}</span></button>)}
+                {MEAL_TYPES.map(t => <button key={t.id} className={`meal-type-btn ${mealType === t.id ? 'active' : ''}`} onClick={() => setMealType(t.id)}><span>{t.name}</span></button>)}
               </div>
             </div>
             <div className="food-input-card">
@@ -228,7 +248,7 @@ function Workout() {
                     <div className="suggestions-box">
                       {suggestions.map((s, i) => (
                         <button key={i} className="sug-btn" onClick={() => selectFood(s)}>
-                          <span className="sug-icon">{s.icon}</span>
+                          <span className="sug-icon food-coin" aria-hidden="true"><FoodIcon name={s.name} /></span>
                           <span className="sug-name">{s.name}</span>
                           <span className="sug-cal">{s.calories} cal/{s.unit}</span>
                         </button>
@@ -240,8 +260,8 @@ function Workout() {
               {step === 2 && pickedFood && (
                 <div className="step-amount">
                   <div className="picked-header">
-                    <div className="picked-info"><span className="picked-icon">{pickedFood.icon}</span><span className="picked-name">{pickedFood.name}</span></div>
-                    <button className="back-btn" onClick={goBackToSearch}>← Change</button>
+                    <div className="picked-info"><span className="picked-icon food-coin" aria-hidden="true"><FoodIcon name={pickedFood.name} /></span><span className="picked-name">{pickedFood.name}</span></div>
+                    <button className="back-btn" onClick={goBackToSearch}>Change</button>
                   </div>
                   <div className="qty-section">
                     <label>How many {pickedFood.unit}s?</label>
@@ -260,17 +280,19 @@ function Workout() {
                   )}
                 </div>
               )}
-              <button className="btn btn-primary add-meal-btn" onClick={addMealToList} disabled={step !== 2 || !pickedFood}>+ Add to Meals</button>
+              <button className="btn btn-primary add-meal-btn" onClick={addMealToList} disabled={step !== 2 || !pickedFood}>Add to Meals</button>
             </div>
             {meals.length > 0 && (
               <div className="meals-summary">
                 <h3>Today's Meals</h3>
                 {meals.map((m, i) => (
                   <div key={i} className="meal-row">
-                    <span className="mr-icon">{m.icon}</span>
+                    <span className="mr-icon food-coin" aria-hidden="true"><FoodIcon name={m.food} /></span>
                     <div className="mr-info"><strong>{m.food}</strong><span>{MEAL_TYPES.find(t => t.id === m.type)?.name} • {m.amount}</span></div>
                     <div className="mr-nut"><span className="mr-cal">{m.calories} cal</span><span className="mr-mac">P:{m.protein}g C:{m.carbs}g F:{m.fat}g</span></div>
-                    <button className="mr-del" onClick={() => removeMeal(i)}>✕</button>
+                    <button className="mr-del" onClick={() => removeMeal(i)} aria-label={`Remove ${m.food}`}>
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+                    </button>
                   </div>
                 ))}
                 <div className="totals-bar">
@@ -282,7 +304,7 @@ function Workout() {
             )}
             <div className="meal-actions">
               <button className="btn btn-secondary" onClick={() => setScreen('workout')}>Skip</button>
-              <button className="btn btn-primary" onClick={saveMealsAndGo} disabled={saving}>{saving ? 'Saving...' : 'Continue to Workout →'}</button>
+              <button className="btn btn-primary" onClick={saveMealsAndGo} disabled={saving}>{saving ? 'Saving...' : 'Continue to Workout'}</button>
             </div>
           </div>
         </main>
