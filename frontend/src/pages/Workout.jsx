@@ -79,6 +79,18 @@ const MEAL_TYPES = [
 
 const YouTubeIcon = () => <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
 
+// Small line-icons for the workout view. stroke=currentColor so each inherits
+// its gold coin / text color; CSS sets a fixed pixel size (never width 100%).
+const LineIcon = ({ d, className }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{ __html: d }} />
+)
+const FlameIcon = (p) => <LineIcon {...p} d='<path d="M12 3c1.2 3 4 4.2 4 7.2a4 4 0 0 1-8 0c0-1.1.5-2.1 1.1-2.8C10.2 6.6 11.3 4.8 12 3z"/>' />
+const ClockIcon = (p) => <LineIcon {...p} d='<circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l3 1.8"/>' />
+const CheckIcon = (p) => <LineIcon {...p} d='<path d="M5 12.5l4.5 4.5L19 7.5"/>' />
+const RepeatIcon = (p) => <LineIcon {...p} d='<path d="M4 9.5a5 5 0 0 1 5-5h6M20 14.5a5 5 0 0 1-5 5H9"/><path d="M14 1.5l3 3-3 3M10 22.5l-3-3 3-3"/>' />
+const WarnIcon = (p) => <LineIcon {...p} d='<path d="M12 4.5 21 20H3z"/><path d="M12 10.5v4M12 17.4h.01"/>' />
+const XIcon = (p) => <LineIcon {...p} d='<path d="M6 6l12 12M18 6 6 18"/>' />
+
 const LazyYouTube = ({ exerciseName }) => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [videoData, setVideoData] = useState(null)
@@ -313,18 +325,33 @@ function Workout() {
   }
 
   return (
-    <div className="workout-page">
-      <header className="workout-header"><div className="header-content"><Link to="/" className="brand"><span className="logo-og"><span className="logo-o">O</span><span className="logo-g">G</span></span> <span className="brand-old">Old</span> <span className="brand-gold">Is Gold</span></Link><nav className="header-nav"><Link to="/workout" className="nav-link active">Today</Link><Link to="/nutrition" className="nav-link">Nutrition</Link><Link to="/progress" className="nav-link">Progress</Link></nav></div></header>
+    <div className="workout-page workout-screen" style={{ '--logo': `url(${logo})` }}>
+      {/* Brand header: coin medallion + wordmark (same medallion pattern as Landing). */}
+      <header className="workout-header">
+        <div className="header-content">
+          <Link to="/" className="brand">
+            <span className="medallion brand-mark" aria-hidden="true"></span>
+            <span className="wordmark">Old <span className="gold">Is&nbsp;Gold</span></span>
+          </Link>
+          <nav className="header-nav">
+            <Link to="/workout" className="nav-link active">Today</Link>
+            <Link to="/nutrition" className="nav-link">Nutrition</Link>
+            <Link to="/progress" className="nav-link">Progress</Link>
+          </nav>
+        </div>
+      </header>
       <main className="workout-main">
         <div className="container">
-          <div className="welcome-section"><h1>Hello, {userName}!</h1><p>Here's your workout for today.</p></div>
+          <div className="welcome-section"><h1>Hello, {userName}</h1><p>Here's your workout for today.</p></div>
+          {/* Stat cards: dark coin + line icon, value, muted label (no emoji). */}
           <div className="stats-row">
-            <div className="mini-stat-card"><span className="mini-stat-icon">🔥</span><div><span className="mini-stat-value">{burned}</span><span className="mini-stat-label">Burned</span></div></div>
-            <div className="mini-stat-card"><span className="mini-stat-icon">⏱️</span><div><span className="mini-stat-value">{plan?.duration_minutes || 15}</span><span className="mini-stat-label">Minutes</span></div></div>
-            <div className="mini-stat-card"><span className="mini-stat-icon">✅</span><div><span className="mini-stat-value">{completedExercises.length}/{plan?.exercises?.length || 0}</span><span className="mini-stat-label">Done</span></div></div>
+            <div className="mini-stat-card"><span className="stat-coin" aria-hidden="true"><FlameIcon /></span><div><span className="mini-stat-value">{burned}</span><span className="mini-stat-label">Burned</span></div></div>
+            <div className="mini-stat-card"><span className="stat-coin" aria-hidden="true"><ClockIcon /></span><div><span className="mini-stat-value">{plan?.duration_minutes || 15}</span><span className="mini-stat-label">Minutes</span></div></div>
+            <div className="mini-stat-card"><span className="stat-coin" aria-hidden="true"><CheckIcon /></span><div><span className="mini-stat-value">{completedExercises.length}/{plan?.exercises?.length || 0}</span><span className="mini-stat-label">Done</span></div></div>
           </div>
           <div className="progress-card"><div className="progress-header"><div><h2>Today's Progress</h2><p>{completedExercises.length} of {plan?.exercises?.length || 0} exercises</p></div><div className="progress-percentage">{prog}%</div></div><div className="progress-bar"><div className="progress-fill" style={{ width: `${prog}%` }}></div></div></div>
-          <div className="alert alert-warning"><span>⚠️</span><div><strong>Safety First</strong><p>Listen to your body. Stop if you feel pain.</p></div></div>
+          {/* Safety strip: quiet gold-tinted banner with the warn icon (no emoji). */}
+          <div className="alert alert-warning"><span className="safety-icon" aria-hidden="true"><WarnIcon /></span><div><strong>Safety First</strong><p>Listen to your body. Stop if you feel pain.</p></div></div>
           <div className="exercises-section">
             <h2>Your Exercises</h2>
             <div className="exercises-list">
@@ -332,10 +359,10 @@ function Workout() {
                 <div key={i} className={`exercise-card ${completedExercises.includes(i) ? 'completed' : ''} ${expandedVideo === i ? 'expanded' : ''}`}>
                   <div className="exercise-main">
                     <div className="exercise-left" onClick={() => toggleEx(i)}>
-                      <div className="exercise-checkbox">{completedExercises.includes(i) ? <span className="check-icon">✓</span> : <span className="check-empty"></span>}</div>
-                      <div className="exercise-content"><h3>{ex.name}</h3><p className="exercise-details"><span>🔄 {ex.reps}</span><span>⏱️ {ex.duration}</span><span className="calories">{getCal(ex.name)} cal</span></p><p className="exercise-instructions">{ex.instructions}</p></div>
+                      <div className="exercise-checkbox">{completedExercises.includes(i) ? <CheckIcon className="check-icon" /> : null}</div>
+                      <div className="exercise-content"><h3>{ex.name}</h3><p className="exercise-details"><span><RepeatIcon /> {ex.reps}</span><span><ClockIcon /> {ex.duration}</span><span className="calories">{getCal(ex.name)} cal</span></p><p className="exercise-instructions">{ex.instructions}</p></div>
                     </div>
-                    <button className={`youtube-btn ${expandedVideo === i ? 'active' : ''}`} onClick={() => setExpandedVideo(expandedVideo === i ? null : i)}>{expandedVideo === i ? <><span>✕</span><span>Hide</span></> : <><YouTubeIcon /><span className="yt-text"><span className="yt-label">Tutorial</span><span className="yt-sub">Watch</span></span></>}</button>
+                    <button className={`youtube-btn ${expandedVideo === i ? 'active' : ''}`} onClick={() => setExpandedVideo(expandedVideo === i ? null : i)}>{expandedVideo === i ? <><XIcon className="yt-hide-icon" /><span>Hide</span></> : <><YouTubeIcon /><span className="yt-text"><span className="yt-label">Tutorial</span><span className="yt-sub">Watch</span></span></>}</button>
                   </div>
                   {expandedVideo === i && <div className="exercise-video"><LazyYouTube exerciseName={ex.name} /></div>}
                 </div>

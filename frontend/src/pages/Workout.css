@@ -531,3 +531,265 @@ input::placeholder {
     animation: none !important;
   }
 }
+
+/* ============================================================================
+ * Workout / exercises view redesign — scoped entirely under .workout-screen
+ * so the meals view (.log-meals) is untouched. Reuses the site's gold-on-dark
+ * tokens + Fraunces / Hanken Grotesk. Some rules carry !important only to
+ * defeat the global .exercise-card !important rules earlier in this file.
+ * ========================================================================== */
+.workout-screen {
+  --bg: #15120c;
+  --bg-soft: #1c1810;
+  --panel: #211c12;
+  --field: #100d08;
+  --edge: rgba(228, 196, 122, 0.18);
+  --ink: #f6f0e2;
+  --ink-soft: #cbc1a8;
+  --ink-faint: #948a76;
+  --gold: #d9b25a;
+  --gold-bright: #ecca7c;
+  --gold-deep: #b58f3e;
+  --gold-ink: #18130a;
+  --cream: #fcfdf7;
+  --danger: #e08274;
+  --radius: 16px;
+  --radius-s: 12px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+  color: var(--ink);
+  font-family: "Hanken Grotesk", sans-serif;
+}
+
+/* Header + brand medallion. Brand link must NOT inherit the global blue
+   underlined link style. */
+.workout-screen .workout-header {
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--edge);
+}
+.workout-screen .brand,
+.workout-screen .brand:hover {
+  gap: 14px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.workout-screen .medallion {
+  display: block;
+  border-radius: 50%;
+  background-color: var(--cream);
+  background-image: var(--logo);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px rgba(217, 178, 90, 0.55);
+}
+.workout-screen .brand-mark { width: 42px; height: 42px; flex: none; }
+.workout-screen .wordmark {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 23px;
+  letter-spacing: .01em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.workout-screen .wordmark .gold {
+  background: linear-gradient(120deg, var(--gold-deep), var(--gold-bright) 55%, var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Nav: muted links, active gold underline (not a pill) */
+.workout-screen .nav-link {
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-radius: 0;
+  padding: 8px 4px;
+  margin: 0 12px;
+  border-bottom: 2px solid transparent;
+}
+.workout-screen .nav-link:hover { color: var(--gold-bright); }
+.workout-screen .nav-link.active {
+  background: transparent;
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+/* Hero */
+.workout-screen .welcome-section h1 {
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 34px;
+  color: var(--ink);
+}
+.workout-screen .welcome-section p { color: var(--ink-soft); font-size: 18px; }
+
+/* Stat cards: dark coin + line icon, value (Fraunces, gold), muted label.
+   Coin + svg use FIXED px so the icon can never balloon. */
+.workout-screen .mini-stat-card {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-s);
+  gap: 14px;
+}
+.workout-screen .stat-coin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  box-sizing: border-box;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--field);
+  color: var(--gold);
+  border: 1px solid var(--edge);
+}
+.workout-screen .stat-coin svg { width: 24px; height: 24px; }
+.workout-screen .mini-stat-value {
+  color: var(--gold);
+  font-family: "Fraunces", serif;
+}
+.workout-screen .mini-stat-label { color: var(--ink-faint); }
+
+/* Today's Progress card */
+.workout-screen .progress-card {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+}
+.workout-screen .progress-header h2 {
+  color: var(--ink);
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 500;
+}
+.workout-screen .progress-header p { color: var(--ink-faint); }
+.workout-screen .progress-percentage { color: var(--gold); }
+.workout-screen .progress-bar { background: var(--field); }
+.workout-screen .progress-fill {
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold-bright));
+}
+
+/* Safety First: quiet gold-tinted strip with a gold left border (not cream) */
+.workout-screen .alert-warning {
+  background: rgba(217, 178, 90, 0.08);
+  border: 1px solid var(--edge);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius-s);
+}
+.workout-screen .safety-icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--gold);
+}
+.workout-screen .safety-icon svg { width: 22px; height: 22px; }
+.workout-screen .alert-warning strong { color: var(--gold-bright); }
+.workout-screen .alert-warning p { color: var(--ink-soft); }
+
+/* Your Exercises */
+.workout-screen .exercises-section h2 {
+  color: var(--gold);
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* Exercise card — dark panel. !important defeats the global .exercise-card
+   !important rules earlier in this file. */
+.workout-screen .exercise-card {
+  background: var(--panel) !important;
+  border: 1px solid var(--edge) !important;
+  border-radius: var(--radius);
+}
+.workout-screen .exercise-card:hover { border-color: var(--gold) !important; }
+.workout-screen .exercise-card.completed {
+  background: var(--panel) !important;
+  border-color: var(--gold) !important;
+}
+.workout-screen .exercise-card.expanded { border-color: var(--gold) !important; }
+
+/* Round gold checkbox; completed = gold fill + dark check */
+.workout-screen .exercise-checkbox {
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--edge);
+  color: var(--gold);
+}
+.workout-screen .exercise-checkbox svg { width: 18px; height: 18px; }
+.workout-screen .exercise-card.completed .exercise-checkbox {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.workout-screen .exercise-card.completed .exercise-checkbox svg { color: var(--gold-ink); }
+
+/* Card text + meta row */
+.workout-screen .exercise-content h3 { color: var(--ink); }
+.workout-screen .exercise-details span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-soft);
+}
+.workout-screen .exercise-details span svg {
+  width: 16px;
+  height: 16px;
+  color: var(--gold);
+}
+.workout-screen .exercise-details .calories { color: var(--gold); }
+.workout-screen .exercise-instructions { color: var(--ink-faint); }
+
+/* Tutorial button: dark button, gold ring on hover, red YouTube glyph kept */
+.workout-screen .youtube-btn {
+  background: var(--field);
+  color: var(--ink);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-s);
+}
+.workout-screen .youtube-btn:hover { background: var(--field); border-color: var(--gold-bright); }
+.workout-screen .youtube-btn.active { background: var(--field); border-color: var(--gold); }
+/* Keep the YouTube play glyph red; the Hide "x" stays muted. */
+.workout-screen .youtube-btn svg:not(.yt-hide-icon) { color: #ff0000; }
+.workout-screen .yt-label { color: var(--ink-faint); }
+.workout-screen .yt-sub { color: var(--ink); }
+.workout-screen .yt-hide-icon { width: 18px; height: 18px; color: var(--ink-soft); }
+
+/* Expanded video: framed rounded container with a thin gold edge */
+.workout-screen .exercise-video {
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  background: #000;
+}
+
+/* Primary button: flat solid gold (overrides the global green .btn-primary) */
+.workout-screen .btn-primary {
+  background: var(--gold);
+  color: var(--gold-ink);
+  border-radius: 14px;
+  font-family: "Hanken Grotesk", sans-serif;
+  font-weight: 700;
+  box-shadow: 0 4px 14px -10px rgba(0, 0, 0, 0.55);
+}
+.workout-screen .btn-primary:hover:not(:disabled) {
+  background: var(--gold-bright);
+  transform: none;
+  box-shadow: 0 4px 14px -10px rgba(0, 0, 0, 0.55);
+}
+.workout-screen .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Accessibility: visible gold focus ring; respect reduced motion */
+.workout-screen a:focus-visible,
+.workout-screen button:focus-visible,
+.workout-screen .exercise-left:focus-visible {
+  outline: 3px solid var(--gold-bright);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .workout-screen *,
+  .workout-screen *::before,
+  .workout-screen *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
