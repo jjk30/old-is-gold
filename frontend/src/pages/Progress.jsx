@@ -206,26 +206,81 @@ function Progress() {
 
           <div className="macros-section">
             <h3>Macros</h3>
-            <div className="macro-row">
-              <span className="macro-name">Protein</span>
-              <div className="macro-track">
-                <div className="macro-fill protein" style={{width: `${Math.min(100, (totalProtein/110)*100)}%`}}></div>
+            <div className="macros-body">
+              {/* Left: the three bars (narrower), tinted to each macro color. */}
+              <div className="macro-bars">
+                <div className="macro-row">
+                  <span className="macro-name">Protein</span>
+                  <div className="macro-track">
+                    <div className="macro-fill protein" style={{width: `${Math.min(100, (totalProtein/110)*100)}%`}}></div>
+                  </div>
+                  <span className="macro-value">{totalProtein}g / 110g</span>
+                </div>
+                <div className="macro-row">
+                  <span className="macro-name">Carbs</span>
+                  <div className="macro-track">
+                    <div className="macro-fill carbs" style={{width: `${Math.min(100, (totalCarbs/250)*100)}%`}}></div>
+                  </div>
+                  <span className="macro-value">{totalCarbs}g / 250g</span>
+                </div>
+                <div className="macro-row">
+                  <span className="macro-name">Fat</span>
+                  <div className="macro-track">
+                    <div className="macro-fill fat" style={{width: `${Math.min(100, (totalFat/65)*100)}%`}}></div>
+                  </div>
+                  <span className="macro-value">{totalFat}g / 65g</span>
+                </div>
               </div>
-              <span className="macro-value">{totalProtein}g / 110g</span>
-            </div>
-            <div className="macro-row">
-              <span className="macro-name">Carbs</span>
-              <div className="macro-track">
-                <div className="macro-fill carbs" style={{width: `${Math.min(100, (totalCarbs/250)*100)}%`}}></div>
-              </div>
-              <span className="macro-value">{totalCarbs}g / 250g</span>
-            </div>
-            <div className="macro-row">
-              <span className="macro-name">Fat</span>
-              <div className="macro-track">
-                <div className="macro-fill fat" style={{width: `${Math.min(100, (totalFat/65)*100)}%`}}></div>
-              </div>
-              <span className="macro-value">{totalFat}g / 65g</span>
+              {/* Right: donut ring showing the protein/carbs/fat split by grams.
+                  Computed from the existing totals; no heading. */}
+              {(() => {
+                const macros = [
+                  { key: 'protein', name: 'Protein', grams: totalProtein, color: '#f3e6bb' },
+                  { key: 'carbs', name: 'Carbs', grams: totalCarbs, color: '#d6a23f' },
+                  { key: 'fat', name: 'Fat', grams: totalFat, color: '#7a5a24' },
+                ]
+                const macroTotal = totalProtein + totalCarbs + totalFat
+                const C = 2 * Math.PI * 50
+                const gap = 3
+                let cumulative = 0
+                const arcs = macros.map((m) => {
+                  const frac = macroTotal > 0 ? m.grams / macroTotal : 0
+                  const arcLen = frac * C
+                  const dash = Math.max(0, arcLen - gap)
+                  const arc = { key: m.key, color: m.color, dasharray: `${dash} ${C - dash}`, dashoffset: -cumulative }
+                  cumulative += arcLen
+                  return arc
+                })
+                return (
+                  <div className="macro-ring-wrap">
+                    <div className="macro-ring">
+                      <svg viewBox="0 0 128 128" width="128" height="128" aria-hidden="true">
+                        <circle cx="64" cy="64" r="50" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="14" />
+                        {macroTotal > 0 && arcs.map((a) => (
+                          <circle key={a.key} cx="64" cy="64" r="50" fill="none" stroke={a.color} strokeWidth="14"
+                            strokeDasharray={a.dasharray} strokeDashoffset={a.dashoffset} transform="rotate(-90 64 64)" />
+                        ))}
+                      </svg>
+                      <div className="ring-center">
+                        <span className="ring-total">{macroTotal}g</span>
+                        <span className="ring-sub">logged</span>
+                      </div>
+                    </div>
+                    <div className="macro-legend">
+                      {macros.map((m) => {
+                        const pct = macroTotal > 0 ? Math.round((m.grams / macroTotal) * 100) : 0
+                        return (
+                          <div key={m.key} className="legend-row">
+                            <span className="legend-swatch" style={{ background: m.color }}></span>
+                            <span className="legend-name">{m.name}</span>
+                            <span className="legend-pct">{pct}%</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })()}
             </div>
           </div>
 

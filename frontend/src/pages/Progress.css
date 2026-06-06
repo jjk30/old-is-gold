@@ -579,12 +579,82 @@
 .progress-page .macros-section h3 { color: var(--ink); }
 .progress-page .macro-name { color: var(--ink-soft); }
 .progress-page .macro-track { background: rgba(255, 255, 255, 0.06); }
-.progress-page .macro-fill.protein,
-.progress-page .macro-fill.carbs,
-.progress-page .macro-fill.fat {
-  background: linear-gradient(90deg, var(--gold-deep), var(--gold-bright));
-}
+/* Each bar tinted to its macro color (matches the ring arc + legend swatch). */
+.progress-page .macro-fill.protein { background: #f3e6bb; }
+.progress-page .macro-fill.carbs { background: #d6a23f; }
+.progress-page .macro-fill.fat { background: #7a5a24; }
 .progress-page .macro-value { color: var(--gold); }
+
+/* Macros layout: bars on the left (flex), donut ring + legend on the right. */
+.progress-page .macros-body {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.progress-page .macro-bars { flex: 1; min-width: 0; }
+.progress-page .macro-ring-wrap {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Donut ring (fixed px; svg never uses width/height 100%). */
+.progress-page .macro-ring {
+  position: relative;
+  width: 128px;
+  height: 128px;
+}
+.progress-page .ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.progress-page .ring-total {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--gold-bright);
+}
+.progress-page .ring-sub {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
+/* Legend under the ring: swatch + name + grams-share percent. */
+.progress-page .macro-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 128px;
+}
+.progress-page .legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.progress-page .legend-swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  flex: none;
+}
+.progress-page .legend-name { flex: 1; color: var(--ink-soft); }
+.progress-page .legend-pct { color: var(--gold); font-weight: 700; }
+
+/* Stack the ring below the bars on narrow screens. */
+@media (max-width: 600px) {
+  .progress-page .macros-body { flex-direction: column; align-items: stretch; }
+  .progress-page .macro-ring-wrap { align-self: center; }
+}
 
 /* Meals Today */
 .progress-page .meals-section {
