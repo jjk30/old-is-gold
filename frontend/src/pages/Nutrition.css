@@ -687,13 +687,30 @@ select.form-input { cursor: pointer; }
   color: var(--gold-ink);
   border-radius: 999px;
 }
+/* Picked-food nutrition breakdown (step 2): dark boxes, serif values,
+   Calories in gold and Protein/Carbs/Fat in cream — no red/blue/purple.
+   The per-macro color selectors are (0,4,0) so they win over the global
+   .nut-box.pro/.carb/.fat .nut-val (0,3,0) rules that leak in from
+   Workout.css. */
 .nutrition-page .nut-box {
   background: var(--field);
   border: 1px solid var(--edge);
   border-radius: var(--radius-s);
 }
-.nutrition-page .nut-val { color: var(--gold); }
-.nutrition-page .nut-lbl { color: var(--ink-faint); }
+.nutrition-page .nut-val {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  color: var(--gold);
+}
+.nutrition-page .nut-box.cal .nut-val { color: var(--gold); }
+.nutrition-page .nut-box.pro .nut-val,
+.nutrition-page .nut-box.carb .nut-val,
+.nutrition-page .nut-box.fat .nut-val { color: var(--ink); }
+.nutrition-page .nut-lbl {
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
 
 /* Today's meals list */
 .nutrition-page .meals-list h3 {
