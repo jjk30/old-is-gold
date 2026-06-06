@@ -70,7 +70,7 @@ jobs:
             --python-version 3.11 \
             --only-binary=:all: --upgrade \
             -r requirements.txt
-          cp lambda_function.py auth.py build/
+          cp lambda_function.py auth.py ratelimit.py build/
           cd build && zip -qr ../lambda.zip . && cd ..
 
       # Authenticate to AWS using long-lived access keys stored in repo secrets.
