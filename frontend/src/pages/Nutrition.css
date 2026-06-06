@@ -459,3 +459,298 @@ select.form-input { cursor: pointer; }
 .food-search-input::placeholder {
   color: #888 !important;
 }
+
+/* ===========================================================================
+ * Nutrition page redesign — scoped entirely under .nutrition-page so nothing
+ * leaks. Reuses the site's gold-on-dark tokens + Fraunces / Hanken Grotesk.
+ * Overrides the global green .btn-primary and white .form-input only here;
+ * !important on the input bg/color defeats any global !important input rule.
+ * ========================================================================= */
+.nutrition-page {
+  --bg: #15120c;
+  --bg-soft: #1c1810;
+  --panel: #211c12;
+  --field: #100d08;
+  --edge: rgba(228, 196, 122, 0.18);
+  --ink: #f6f0e2;
+  --ink-soft: #cbc1a8;
+  --ink-faint: #948a76;
+  --gold: #d9b25a;
+  --gold-bright: #ecca7c;
+  --gold-deep: #b58f3e;
+  --gold-ink: #18130a;
+  --cream: #fcfdf7;
+  --danger: #e08274;
+  --danger-soft: rgba(224, 130, 116, 0.12);
+  --radius: 16px;
+  --radius-s: 12px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+  color: var(--ink);
+  font-family: "Hanken Grotesk", sans-serif;
+}
+
+/* Header + brand medallion (cream circle ringed in gold, same as Landing) */
+.nutrition-page .nutrition-header {
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--edge);
+}
+.nutrition-page .brand { gap: 14px; }
+.nutrition-page .medallion {
+  display: block;
+  border-radius: 50%;
+  background-color: var(--cream);
+  background-image: var(--logo);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px rgba(217, 178, 90, 0.55);
+}
+.nutrition-page .brand-mark { width: 42px; height: 42px; flex: none; }
+.nutrition-page .wordmark {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 23px;
+  letter-spacing: .01em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.nutrition-page .wordmark .gold {
+  background: linear-gradient(120deg, var(--gold-deep), var(--gold-bright) 55%, var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Nav: muted links, active gets a gold underline (not a pill) */
+.nutrition-page .nav-link {
+  color: var(--ink-soft);
+  border-radius: 0;
+  padding: 8px 4px;
+  margin: 0 12px;
+  border-bottom: 2px solid transparent;
+}
+.nutrition-page .nav-link:hover { color: var(--gold-bright); }
+.nutrition-page .nav-link.active {
+  background: transparent;
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+/* Coins: small dark disc, thin gold ring, gold line icon. Both the coin and
+   its inner svg get FIXED pixel sizes so the icon can never balloon. */
+.nutrition-page .food-coin,
+.nutrition-page .macro-coin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--field);
+  color: var(--gold);
+  border: 1px solid var(--edge);
+}
+.nutrition-page .food-coin svg,
+.nutrition-page .macro-coin svg { width: 24px; height: 24px; }
+
+/* Hero: centered apple coin + italic Fraunces title (must come AFTER the
+   .food-coin sizing so the larger heading coin wins) */
+.nutrition-page .nutrition-hero { text-align: center; margin-bottom: 2rem; }
+.nutrition-page .hero-coin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+}
+.nutrition-page .hero-coin svg { width: 32px; height: 32px; }
+.nutrition-page .nutrition-hero h1 {
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 34px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.nutrition-page .nutrition-hero p { color: var(--ink-soft); font-size: 18px; }
+
+/* Today's Calories card */
+.nutrition-page .stats-card {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+}
+.nutrition-page .stats-header h3 {
+  color: var(--ink);
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 20px;
+}
+.nutrition-page .stats-numbers .consumed { color: var(--gold); }
+.nutrition-page .stats-numbers .remaining { color: var(--cream); }
+.nutrition-page .stats-numbers .goal { color: var(--ink-faint); }
+.nutrition-page .stats-labels span { color: var(--ink-faint); }
+.nutrition-page .stats-card .progress-bar { background: var(--field); }
+.nutrition-page .stats-card .progress-fill {
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold-bright));
+}
+
+/* Macro cards */
+.nutrition-page .macro-card {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-s);
+}
+.nutrition-page .macro-value { color: var(--gold); }
+.nutrition-page .macro-label { color: var(--ink-faint); }
+
+/* Meal-type buttons: selected = solid gold, others = dark */
+.nutrition-page .meal-type-section > label { color: var(--ink-faint); }
+.nutrition-page .meal-type-btn {
+  padding: 12px 22px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+.nutrition-page .meal-type-btn:hover { border-color: var(--gold); color: var(--ink); }
+.nutrition-page .meal-type-btn.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--gold-ink);
+}
+
+/* Food card + dark inset input with gold focus ring (!important beats the
+   global white .form-input rule) */
+.nutrition-page .food-input-card {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+}
+.nutrition-page .step-search label,
+.nutrition-page .qty-section label { color: var(--ink-faint); }
+.nutrition-page .form-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px 18px;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-s);
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 18px;
+  background: var(--field) !important;
+  color: var(--ink) !important;
+  transition: border-color .18s var(--ease), box-shadow .18s var(--ease);
+}
+.nutrition-page .form-input::placeholder { color: var(--ink-faint) !important; }
+.nutrition-page .form-input:focus {
+  outline: none;
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 0 3px rgba(217, 178, 90, 0.25);
+}
+.nutrition-page .qty-input {
+  width: 160px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* Suggestions list */
+.nutrition-page .suggestions-box {
+  background: var(--field);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-s);
+}
+.nutrition-page .sug-btn { gap: 14px; color: var(--ink); }
+.nutrition-page .sug-btn:not(:last-child) { border-bottom-color: rgba(228, 196, 122, 0.12); }
+.nutrition-page .sug-btn:hover { background: rgba(228, 196, 122, 0.08); }
+.nutrition-page .sug-name { color: var(--ink); }
+.nutrition-page .sug-cal { color: var(--gold); font-weight: 600; }
+
+/* Step 2: picked food + amount */
+.nutrition-page .picked-name { color: var(--ink); }
+.nutrition-page .back-btn {
+  border: 1px solid var(--edge);
+  color: var(--ink-soft);
+  border-radius: 999px;
+}
+.nutrition-page .back-btn:hover { border-color: var(--gold); color: var(--gold-bright); }
+.nutrition-page .unit-pill {
+  background: var(--gold);
+  color: var(--gold-ink);
+  border-radius: 999px;
+}
+.nutrition-page .nut-box {
+  background: var(--field);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-s);
+}
+.nutrition-page .nut-val { color: var(--gold); }
+.nutrition-page .nut-lbl { color: var(--ink-faint); }
+
+/* Today's meals list */
+.nutrition-page .meals-list h3 {
+  color: var(--gold);
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 22px;
+}
+.nutrition-page .meal-item {
+  background: var(--field);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-s);
+}
+.nutrition-page .meal-info strong { color: var(--ink); text-transform: capitalize; }
+.nutrition-page .meal-info span { color: var(--ink-faint); }
+.nutrition-page .meal-calories { color: var(--gold); }
+.nutrition-page .delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--ink-faint);
+}
+.nutrition-page .delete-btn:hover { color: var(--danger); background: var(--danger-soft); }
+
+/* Buttons: flat solid-gold primary (overrides the global green gradient) */
+.nutrition-page .btn-primary {
+  background: var(--gold);
+  color: var(--gold-ink);
+  border-radius: 14px;
+  font-family: "Hanken Grotesk", sans-serif;
+  font-weight: 700;
+  box-shadow: 0 4px 14px -10px rgba(0, 0, 0, 0.55);
+}
+.nutrition-page .btn-primary:hover:not(:disabled) {
+  background: var(--gold-bright);
+  transform: none;
+  box-shadow: 0 4px 14px -10px rgba(0, 0, 0, 0.55);
+}
+.nutrition-page .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+.nutrition-page .add-meal-btn:hover:not(:disabled) { opacity: 1; }
+
+/* Accessibility: visible gold focus ring; respect reduced motion */
+.nutrition-page a:focus-visible,
+.nutrition-page button:focus-visible,
+.nutrition-page input:focus-visible {
+  outline: 3px solid var(--gold-bright);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nutrition-page *,
+  .nutrition-page *::before,
+  .nutrition-page *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

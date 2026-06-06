@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { apiGet, apiPost, apiDelete } from '../utils/api'
+import logo from '../assets/logo.webp'
+import FoodIcon from '../components/FoodIcon'
+import MacroIcon from '../components/MacroIcon'
 import './Nutrition.css'
 
 const getLocalDateString = (date = new Date()) => {
@@ -169,12 +172,13 @@ function Nutrition() {
   if (loading) return <div className="loading-screen"><div className="spinner"></div></div>
 
   return (
-    <div className="nutrition-page">
+    <div className="nutrition-page" style={{ '--logo': `url(${logo})` }}>
       <header className="nutrition-header">
         <div className="header-content">
+          {/* Brand: coin medallion + wordmark (same medallion pattern as Landing). */}
           <Link to="/" className="brand">
-            <span className="logo-og"><span className="logo-o">O</span><span className="logo-g">G</span></span>
-            <span className="brand-old">Old</span> <span className="brand-gold">Is Gold</span>
+            <span className="medallion brand-mark" aria-hidden="true"></span>
+            <span className="wordmark">Old <span className="gold">Is&nbsp;Gold</span></span>
           </Link>
           <nav className="header-nav">
             <Link to="/nutrition" className="nav-link active">Nutrition</Link>
@@ -183,12 +187,14 @@ function Nutrition() {
           </nav>
         </div>
       </header>
-      
+
       <main className="nutrition-main">
         <div className="container">
+          {/* Hero: apple food coin above an italic Fraunces "Nutrition". */}
           <div className="nutrition-hero">
-            <h1>🍎 Nutrition Tracker</h1>
-            <p>Track your meals and stay healthy, {userName}!</p>
+            <span className="hero-coin food-coin" aria-hidden="true"><FoodIcon name="apple" /></span>
+            <h1>Nutrition</h1>
+            <p>Track your meals and stay healthy, {userName}.</p>
           </div>
 
           <div className="stats-card">
@@ -210,10 +216,11 @@ function Nutrition() {
             </div>
           </div>
 
+          {/* Macro cards: dark coin + line icon above the value/label (no emoji). */}
           <div className="macros-grid">
-            <div className="macro-card protein"><span className="macro-icon">🥩</span><span className="macro-value">{todayStats.protein}g</span><span className="macro-label">Protein</span></div>
-            <div className="macro-card carbs"><span className="macro-icon">🍞</span><span className="macro-value">{todayStats.carbs}g</span><span className="macro-label">Carbs</span></div>
-            <div className="macro-card fat"><span className="macro-icon">🥑</span><span className="macro-value">{todayStats.fat}g</span><span className="macro-label">Fat</span></div>
+            <div className="macro-card protein"><span className="macro-coin" aria-hidden="true"><MacroIcon kind="protein" /></span><span className="macro-value">{todayStats.protein}g</span><span className="macro-label">Protein</span></div>
+            <div className="macro-card carbs"><span className="macro-coin" aria-hidden="true"><MacroIcon kind="carbs" /></span><span className="macro-value">{todayStats.carbs}g</span><span className="macro-label">Carbs</span></div>
+            <div className="macro-card fat"><span className="macro-coin" aria-hidden="true"><MacroIcon kind="fat" /></span><span className="macro-value">{todayStats.fat}g</span><span className="macro-label">Fat</span></div>
           </div>
 
           <div className="meal-type-section">
@@ -221,7 +228,7 @@ function Nutrition() {
             <div className="meal-type-buttons">
               {MEAL_TYPES.map(t => (
                 <button key={t.id} className={`meal-type-btn ${mealType === t.id ? 'active' : ''}`} onClick={() => setMealType(t.id)}>
-                  <span>{t.icon}</span><span>{t.name}</span>
+                  <span>{t.name}</span>
                 </button>
               ))}
             </div>
@@ -236,7 +243,7 @@ function Nutrition() {
                   <div className="suggestions-box">
                     {suggestions.map((s, i) => (
                       <button key={i} className="sug-btn" onClick={() => selectFood(s)}>
-                        <span className="sug-icon">{s.icon}</span>
+                        <span className="sug-icon food-coin" aria-hidden="true"><FoodIcon name={s.name} /></span>
                         <span className="sug-name">{s.name}</span>
                         <span className="sug-cal">{s.calories} cal/{s.unit}</span>
                       </button>
@@ -249,10 +256,10 @@ function Nutrition() {
               <div className="step-amount">
                 <div className="picked-header">
                   <div className="picked-info">
-                    <span className="picked-icon">{pickedFood.icon}</span>
+                    <span className="picked-icon food-coin" aria-hidden="true"><FoodIcon name={pickedFood.name} /></span>
                     <span className="picked-name">{pickedFood.name}</span>
                   </div>
-                  <button className="back-btn" onClick={goBackToSearch}>← Change</button>
+                  <button className="back-btn" onClick={goBackToSearch}>Change</button>
                 </div>
                 <div className="qty-section">
                   <label>How many {pickedFood.unit}s?</label>
@@ -272,7 +279,7 @@ function Nutrition() {
               </div>
             )}
             <button className="btn btn-primary add-meal-btn" onClick={addMeal} disabled={step !== 2 || !pickedFood || saving}>
-              {saving ? 'Adding...' : '+ Add Meal'}
+              {saving ? 'Adding...' : 'Add Meal'}
             </button>
           </div>
 
@@ -281,20 +288,22 @@ function Nutrition() {
               <h3>Today's Meals</h3>
               {todayMeals.map((meal) => (
                 <div key={meal.progress_id} className="meal-item">
-                  <div className="meal-icon">🍽️</div>
+                  <span className="meal-icon food-coin" aria-hidden="true"><FoodIcon name={meal.food || meal.food_name} /></span>
                   <div className="meal-info">
                     <strong>{meal.food || meal.food_name}</strong>
                     <span>{meal.meal_type} • P:{meal.protein}g C:{meal.carbs}g F:{meal.fat}g</span>
                   </div>
                   <div className="meal-calories">{meal.calories} cal</div>
-                  <button className="delete-btn" onClick={() => deleteMeal(meal.progress_id)}>🗑️</button>
+                  <button className="delete-btn" onClick={() => deleteMeal(meal.progress_id)} aria-label={`Remove ${meal.food || meal.food_name}`}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+                  </button>
                 </div>
               ))}
             </div>
           )}
 
           <div className="continue-section">
-            <button className="btn btn-primary btn-large" onClick={() => navigate('/workout')}>Continue to Workout →</button>
+            <button className="btn btn-primary btn-large" onClick={() => navigate('/workout')}>Continue to Workout</button>
           </div>
         </div>
       </main>
