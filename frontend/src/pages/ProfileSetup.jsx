@@ -48,32 +48,32 @@ function ProfileSetup() {
   })
 
   const healthConditionOptions = [
-    { id: 'diabetes', label: 'Diabetes', emoji: '🩸' },
-    { id: 'hypertension', label: 'High Blood Pressure', emoji: '❤️' },
-    { id: 'cholesterol', label: 'High Cholesterol', emoji: '🫀' },
-    { id: 'arthritis', label: 'Arthritis', emoji: '🦴' },
-    { id: 'heart_disease', label: 'Heart Disease', emoji: '💗' },
-    { id: 'osteoporosis', label: 'Osteoporosis', emoji: '��' },
-    { id: 'back_pain', label: 'Back Pain', emoji: '🩻' },
-    { id: 'obesity', label: 'Obesity', emoji: '⚖️' },
-    { id: 'none', label: 'None of the above', emoji: '✅' }
+    { id: 'diabetes', label: 'Diabetes' },
+    { id: 'hypertension', label: 'High Blood Pressure' },
+    { id: 'cholesterol', label: 'High Cholesterol' },
+    { id: 'arthritis', label: 'Arthritis' },
+    { id: 'heart_disease', label: 'Heart Disease' },
+    { id: 'osteoporosis', label: 'Osteoporosis' },
+    { id: 'back_pain', label: 'Back Pain' },
+    { id: 'obesity', label: 'Obesity' },
+    { id: 'none', label: 'None of the above' }
   ]
 
   const fitnessLevelOptions = [
-    { id: 'beginner', label: 'Beginner', desc: 'New to exercise or returning after a long break', emoji: '🌱' },
-    { id: 'intermediate', label: 'Intermediate', desc: 'Exercise occasionally, some experience', emoji: '🌿' },
-    { id: 'advanced', label: 'Advanced', desc: 'Exercise regularly, good fitness base', emoji: '🌳' }
+    { id: 'beginner', label: 'Beginner', desc: 'New to exercise or returning after a long break' },
+    { id: 'intermediate', label: 'Intermediate', desc: 'Exercise occasionally, some experience' },
+    { id: 'advanced', label: 'Advanced', desc: 'Exercise regularly, good fitness base' }
   ]
 
   const goalOptions = [
-    { id: 'weight_loss', label: 'Lose Weight', emoji: '⚖️' },
-    { id: 'strength', label: 'Build Strength', emoji: '💪' },
-    { id: 'flexibility', label: 'Improve Flexibility', emoji: '🧘' },
-    { id: 'balance', label: 'Better Balance', emoji: '🎯' },
-    { id: 'endurance', label: 'Increase Endurance', emoji: '🏃' },
-    { id: 'pain_relief', label: 'Reduce Pain', emoji: '🩹' },
-    { id: 'mobility', label: 'Improve Mobility', emoji: '🚶' },
-    { id: 'energy', label: 'More Energy', emoji: '⚡' }
+    { id: 'weight_loss', label: 'Lose Weight' },
+    { id: 'strength', label: 'Build Strength' },
+    { id: 'flexibility', label: 'Improve Flexibility' },
+    { id: 'balance', label: 'Better Balance' },
+    { id: 'endurance', label: 'Increase Endurance' },
+    { id: 'pain_relief', label: 'Reduce Pain' },
+    { id: 'mobility', label: 'Improve Mobility' },
+    { id: 'energy', label: 'More Energy' }
   ]
 
   const calculateBMI = () => {
