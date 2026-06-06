@@ -361,3 +361,57 @@
     height: 66px;
   }
 }
+
+/*
+ * Scoped theme overrides — these sit under .login-page so they out-specify
+ * the global .form-input (white) and .btn-primary (green gradient) defined in
+ * index.css, which otherwise leak onto this page. Tokens reused from the block
+ * at the top of this file.
+ */
+
+/* Dark inset inputs (override global white .form-input) */
+.login-page .form-input {
+  width: 100%;
+  min-height: 62px;
+  background: var(--field);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-s);
+  color: var(--ink);
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 18px;
+  padding: 0 18px;
+  transition: border-color .18s var(--ease), box-shadow .18s var(--ease);
+}
+.login-page .form-input::placeholder { color: var(--ink-faint); }
+.login-page .form-input:focus {
+  outline: none;
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 0 3px rgba(217, 178, 90, 0.25);
+}
+/* Keep room for the show/hide eye on the password field (wrapper: .password-field) */
+.login-page .password-field .form-input { padding-right: 54px; }
+
+/* Flat gold primary button (override global green .btn-primary) */
+.login-page .btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 64px;
+  background: var(--gold);
+  color: var(--gold-ink);
+  border: none;
+  border-radius: 14px;
+  font-family: "Hanken Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
+  transition: transform .15s var(--ease), background .2s var(--ease);
+}
+.login-page .btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: var(--gold-bright);
+  box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
+}
+.login-page .btn-primary:active:not(:disabled) { transform: translateY(0); }
+.login-page .btn-primary:disabled { opacity: .6; cursor: not-allowed; }
