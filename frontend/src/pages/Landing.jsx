@@ -194,7 +194,7 @@ function Landing() {
             </>
           ) : (
             <>
-              <Link className="login-link" to="/aboutus">About us</Link>
+              <Link className="login-link" to="/aboutus" target="_blank" rel="noopener noreferrer">About us</Link>
               <Link className="login-link" to="/login">Log in</Link>
             </>
           )}
