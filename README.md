@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="docs/img/logo.webp" alt="Old Is Gold logo" width="120" height="120">
+  <a href="https://oldisgold.fit/">
+    <img src="docs/img/logo.webp" alt="Old Is Gold logo" width="120" height="120">
+  </a>
 </p>
 
 <h1 align="center">Old Is Gold</h1>
