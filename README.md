@@ -176,11 +176,11 @@ DynamoDB, four application tables plus one for rate limiting. The schema is inte
 
 | Table | Partition key | Sort key | Holds |
 |---|---|---|---|
-| `oldisgold-profiles` | `user_id` | — | Detailed profile: age, measurements, BMI, health conditions, fitness level, goals |
-| `oldisgold-users` | `user_id` | — | A lightweight summary of the same person |
-| `oldisgold-plans` | `user_id` | — | The generated workout plan (one current plan per user) |
+| `oldisgold-profiles` | `user_id` | n/a | Detailed profile: age, measurements, BMI, health conditions, fitness level, goals |
+| `oldisgold-users` | `user_id` | n/a | A lightweight summary of the same person |
+| `oldisgold-plans` | `user_id` | n/a | The generated workout plan (one current plan per user) |
 | `oldisgold-progress` | `user_id` | `progress_id` | Both workouts (`type: "workout"`) and meals (`type: "meal"`) |
-| `oldisgold-ratelimit` | `rl_key` | — | Short-lived per-window request counters, auto-expired by TTL |
+| `oldisgold-ratelimit` | `rl_key` | n/a | Short-lived per-window request counters, auto-expired by TTL |
 
 Two design notes worth calling out:
 
@@ -276,8 +276,8 @@ Each deploy step retries up to three times before failing, to ride out transient
 
 **Lambda environment variables (set on the function in AWS):**
 
-- `FIREBASE_PROJECT_ID` — the Firebase project used to verify ID tokens.
-- `YOUTUBE_API_KEY` — the restricted YouTube Data API key, server-side only.
+- `FIREBASE_PROJECT_ID`: the Firebase project used to verify ID tokens.
+- `YOUTUBE_API_KEY`: the restricted YouTube Data API key, server-side only.
 
 **Manual deploy (fallback):**
 
