@@ -17,8 +17,8 @@ function About() {
         </Link>
 
         <nav className="main-nav" aria-label="Primary">
-          <Link className="nav-link active" to="/aboutus" aria-current="page">About us</Link>
-          <Link className="nav-link" to="/login">Log in</Link>
+          <Link className="nav-pill" to="/aboutus" aria-current="page">About us</Link>
+          <Link className="nav-pill" to="/login">Log in</Link>
         </nav>
       </header>
 

@@ -63,17 +63,14 @@
 .about-page .main-nav {
     display:flex; align-items:center; gap:10px;
 }
-.about-page .nav-link {
+.about-page .nav-pill {
     display:inline-flex; align-items:center; font-weight:600; font-size:18px;
     color:var(--ink); text-decoration:none; padding:12px 24px;
     border-radius:var(--radius-s); border:1px solid rgba(228,196,122,0.4);
     transition:background .25s var(--ease);
 }
-.about-page .nav-link:hover {
+.about-page .nav-pill:hover {
     background:rgba(228,196,122,0.08);
-}
-.about-page .nav-link.active {
-    color:var(--gold-bright); border-color:rgba(228,196,122,0.45);
 }
 .about-page main {
     position:relative; z-index:1;
@@ -222,7 +219,7 @@
   .about-page .brand-mark {
     width:40px; height:40px;
   }
-  .about-page .nav-link {
+  .about-page .nav-pill {
     padding:11px 16px; font-size:16px;
   }
   .about-page .story p {
