@@ -1,0 +1,231 @@
+/*
+ * About page: "Why I built Old Is Gold".
+ * Presentation only. All tokens and selectors are scoped to .about-page so
+ * this look does not leak into other pages. Fonts (Fraunces, Hanken Grotesk)
+ * are loaded globally in index.html, same as the home page.
+ */
+.about-page {
+    --bg:#15120c; --bg-soft:#1c1810; --panel:#211c12;
+    --edge:rgba(228,196,122,0.18);
+    --ink:#f6f0e2; --ink-soft:#cbc1a8; --ink-faint:#948a76;
+    --gold:#d9b25a; --gold-bright:#ecca7c; --gold-deep:#b58f3e; --gold-ink:#18130a;
+    --cream:#fcfdf7;
+    --radius:18px; --radius-s:12px;
+    --ease:cubic-bezier(.2,.7,.2,1);
+    --edge-pad:clamp(20px,3vw,56px);
+    min-height:100vh;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Hanken Grotesk",sans-serif;
+    font-size:19px; line-height:1.6;
+    position:relative; overflow-x:hidden;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+.about-page::before {
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(120% 90% at 85% -10%, rgba(217,178,90,0.15), rgba(217,178,90,0) 55%),
+      radial-gradient(120% 120% at 50% 120%, rgba(0,0,0,0.5), rgba(0,0,0,0) 60%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+}
+.about-page::after {
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    opacity:.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.about-page .medallion {
+    display:block; border-radius:50%;
+    background-color:var(--cream);
+    background-image:var(--logo);
+    background-size:cover; background-position:center;
+    box-shadow:0 0 0 4px var(--bg), 0 0 0 6px rgba(217,178,90,0.55);
+}
+.about-page .topbar {
+    position:relative; z-index:5;
+    display:flex; align-items:center; justify-content:space-between; gap:24px;
+    width:100%; padding:24px var(--edge-pad) 20px;
+    border-bottom:1px solid rgba(228,196,122,0.12);
+}
+.about-page .brand {
+    display:flex; align-items:center; gap:14px; text-decoration:none;
+}
+.about-page .brand-mark {
+    width:46px; height:46px; flex:none;
+}
+.about-page .wordmark {
+    font-family:"Fraunces",serif; font-weight:600; font-size:25px;
+    letter-spacing:.01em; color:var(--ink); white-space:nowrap;
+}
+.about-page .wordmark .gold {
+    background:linear-gradient(120deg,var(--gold-deep),var(--gold-bright) 55%,var(--gold));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.about-page .main-nav {
+    display:flex; align-items:center; gap:10px;
+}
+.about-page .nav-link {
+    display:inline-flex; align-items:center; font-weight:600; font-size:18px;
+    color:var(--ink); text-decoration:none; padding:12px 24px;
+    border-radius:var(--radius-s); border:1px solid rgba(228,196,122,0.4);
+    transition:background .25s var(--ease);
+}
+.about-page .nav-link:hover {
+    background:rgba(228,196,122,0.08);
+}
+.about-page .nav-link.active {
+    color:var(--gold-bright); border-color:rgba(228,196,122,0.45);
+}
+.about-page main {
+    position:relative; z-index:1;
+}
+.about-page .wrap {
+    max-width:920px; margin:0 auto; padding:0 var(--edge-pad);
+}
+.about-page .hero {
+    text-align:center; padding:72px 0 18px;
+}
+.about-page .eyebrow {
+    font-weight:700; font-size:14px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--gold); margin:0 0 18px;
+}
+.about-page .page-title {
+    font-family:"Fraunces",serif; font-weight:400; font-style:italic;
+    font-size:clamp(34px,5vw,52px); line-height:1.12; color:var(--ink);
+    max-width:18ch; margin:0 auto; letter-spacing:-0.01em;
+}
+.about-page .rule {
+    width:64px; height:2px; margin:34px auto 0; border:none;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.about-page .story {
+    padding:44px 0 8px;
+}
+.about-page .story p {
+    font-size:21px; line-height:1.7; color:var(--ink-soft);
+    max-width:64ch; margin:0 auto 26px;
+}
+.about-page .story p strong {
+    color:var(--ink); font-weight:600;
+}
+.about-page .sec-head {
+    text-align:center; margin:64px 0 36px;
+}
+.about-page .sec-head h2 {
+    font-family:"Fraunces",serif; font-style:italic; font-weight:400;
+    font-size:clamp(28px,3.4vw,38px); color:var(--ink); letter-spacing:-0.01em;
+}
+.about-page .sec-head .eyebrow {
+    margin-bottom:14px;
+}
+.about-page .beliefs {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:18px;
+}
+.about-page .belief {
+    background:var(--panel); border:1px solid var(--edge);
+    border-radius:var(--radius); padding:30px 26px;
+}
+.about-page .b-icon {
+    width:52px; height:52px; border-radius:14px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(217,178,90,0.10); border:1px solid rgba(217,178,90,0.28);
+    color:var(--gold-bright); margin-bottom:20px;
+}
+.about-page .b-icon svg {
+    width:26px; height:26px;
+}
+.about-page .belief h3 {
+    font-family:"Fraunces",serif; font-weight:500; font-size:23px;
+    color:var(--ink); margin-bottom:10px;
+}
+.about-page .belief p {
+    font-size:17.5px; line-height:1.55; color:var(--ink-soft);
+}
+.about-page .coming {
+    display:grid; grid-template-columns:repeat(2,1fr); gap:18px;
+}
+.about-page .csoon {
+    position:relative; background:var(--panel); border:1px solid var(--edge);
+    border-radius:var(--radius); padding:34px 32px;
+}
+.about-page .pill {
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--gold-ink); background:var(--gold);
+    padding:6px 13px; border-radius:999px; margin-bottom:22px;
+}
+.about-page .pill .dot {
+    width:7px; height:7px; border-radius:50%; background:var(--gold-ink);
+}
+.about-page .cs-icon {
+    width:56px; height:56px; border-radius:16px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(217,178,90,0.10); border:1px solid rgba(217,178,90,0.28);
+    color:var(--gold-bright); margin-bottom:22px;
+}
+.about-page .cs-icon svg {
+    width:30px; height:30px;
+}
+.about-page .csoon h3 {
+    font-family:"Fraunces",serif; font-weight:500; font-size:26px;
+    color:var(--ink); margin-bottom:12px;
+}
+.about-page .csoon p {
+    font-size:18px; line-height:1.6; color:var(--ink-soft);
+}
+.about-page .badges {
+    display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;
+}
+.about-page .badge {
+    display:inline-flex; align-items:center; gap:9px;
+    font-size:15.5px; font-weight:600; color:var(--ink);
+    background:rgba(255,255,255,0.04); border:1px solid var(--edge);
+    padding:9px 15px; border-radius:999px;
+}
+.about-page .badge svg {
+    width:18px; height:18px; color:var(--gold);
+}
+.about-page .closing {
+    text-align:center; max-width:52ch; margin:48px auto 0;
+    font-size:19px; line-height:1.6; color:var(--ink-soft);
+}
+.about-page footer {
+    position:relative; z-index:1; text-align:center;
+    border-top:1px solid rgba(228,196,122,0.12);
+    padding:30px var(--edge-pad) 40px; margin-top:80px;
+}
+.about-page footer .fmark {
+    font-family:"Fraunces",serif; font-size:18px; color:var(--ink-soft);
+}
+.about-page footer .fmark .gold {
+    color:var(--gold);
+}
+.about-page a:focus-visible, .about-page button:focus-visible {
+    outline:3px solid var(--gold-bright); outline-offset:3px; border-radius:10px;
+}
+
+@media (max-width:780px) {
+  .about-page .beliefs {
+    grid-template-columns:1fr;
+  }
+  .about-page .coming {
+    grid-template-columns:1fr;
+  }
+}
+
+@media (max-width:560px) {
+  .about-page .topbar {
+    padding:18px 18px 14px; gap:8px; flex-wrap:wrap;
+  }
+  .about-page .wordmark {
+    font-size:21px;
+  }
+  .about-page .brand-mark {
+    width:40px; height:40px;
+  }
+  .about-page .nav-link {
+    padding:11px 16px; font-size:16px;
+  }
+  .about-page .story p {
+    font-size:19px;
+  }
+}
