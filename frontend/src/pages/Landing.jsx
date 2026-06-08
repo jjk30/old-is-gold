@@ -193,7 +193,10 @@ function Landing() {
               </div>
             </>
           ) : (
-            <Link className="login-link" to="/login">Log in</Link>
+            <>
+              <Link className="login-link" to="/aboutus">About us</Link>
+              <Link className="login-link" to="/login">Log in</Link>
+            </>
           )}
         </nav>
       </header>
