@@ -80,7 +80,7 @@ function About() {
               <p>Soon you will be able to link the devices you already wear, like your Apple Watch or your WHOOP band. Your steps, heart rate, and sleep will flow straight into Old Is Gold, so you get a fuller picture of your health without typing in a single number.</p>
               <div className="badges">
                 <span className="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="7" y="7" width="10" height="10" rx="3" /><path d="M9.2 7l.7-3h4.2l.7 3" /><path d="M9.2 17l.7 3h4.2l.7-3" /></svg>Apple Watch</span>
-                <span className="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12h3.5l1.8-4.5L11 16l2-7 1.6 3H21" /></svg>WHOOP</span>
+                <span className="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9.2" /><path d="M7.3 7.6 L9.5 16.4 L12 11.4 L14.5 16.4 L16.7 7.6" /></svg>WHOOP</span>
               </div>
             </div>
             <div className="csoon">
