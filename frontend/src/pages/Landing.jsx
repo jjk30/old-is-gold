@@ -228,12 +228,13 @@ function Landing() {
       {/* Delete confirm dialog */}
       {showDeleteConfirm && (
         <div className="modal-overlay show" role="presentation" onClick={() => setShowDeleteConfirm(false)}>
-          <div className="modal-box" role="dialog" aria-modal="true" aria-labelledby="dmTitle" onClick={(e) => e.stopPropagation()}>
-            <h2 id="dmTitle">Delete account?</h2>
-            <p>This permanently removes your account and all of your data. This cannot be undone.</p>
+          <div className="modal-box" role="dialog" aria-modal="true" aria-labelledby="dmTitle" aria-describedby="dmDesc" onClick={(e) => e.stopPropagation()}>
+            <h2 id="dmTitle">Are you sure?</h2>
+            <p id="dmDesc">This permanently deletes your account and all of your data. This cannot be undone.</p>
             <div className="modal-buttons">
-              <button className="modal-btn cancel" type="button" onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
-              <button className="modal-btn delete" type="button" onClick={handleDeleteAccount}>Yes, delete</button>
+              {/* "No" (cancel) comes first and takes focus by default; "Yes" (delete) is the gold button. */}
+              <button className="modal-btn cancel" type="button" onClick={() => setShowDeleteConfirm(false)} autoFocus>No</button>
+              <button className="modal-btn delete" type="button" onClick={handleDeleteAccount}>Yes</button>
             </div>
           </div>
         </div>

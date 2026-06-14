@@ -790,8 +790,8 @@
   border: 1px solid var(--edge);
 }
 .progress-page .modal-btn.cancel:hover { background: rgba(255, 255, 255, 0.1); }
-.progress-page .modal-btn.delete { background: var(--danger); color: #2a120d; }
-.progress-page .modal-btn.delete:hover { background: var(--danger); filter: brightness(1.06); }
+.progress-page .modal-btn.delete { background: linear-gradient(135deg, var(--gold-bright), var(--gold)); color: var(--gold-ink); }
+.progress-page .modal-btn.delete:hover { filter: brightness(1.05); }
 .progress-page .modal-box.goodbye {
   background: var(--panel);
   border-color: var(--gold);

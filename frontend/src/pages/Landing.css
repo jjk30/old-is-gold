@@ -413,6 +413,11 @@
   padding: 30px 28px;
   text-align: center;
   box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.85);
+  animation: landing-modal-pop .22s var(--ease);
+}
+@keyframes landing-modal-pop {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
 }
 .landing-page .modal-box h2 {
   font-family: "Fraunces", serif;
@@ -450,11 +455,11 @@
   background: rgba(255, 255, 255, 0.1);
 }
 .landing-page .modal-btn.delete {
-  background: var(--danger);
-  color: #2a120d;
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  color: var(--gold-ink);
 }
 .landing-page .modal-btn.delete:hover {
-  filter: brightness(1.06);
+  filter: brightness(1.05);
 }
 
 /* Full-screen loading / goodbye screen (logout + delete) */
