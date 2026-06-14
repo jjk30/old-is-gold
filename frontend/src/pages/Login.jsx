@@ -17,6 +17,7 @@ function Login() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [name, setName] = useState('')
   const [error, setError] = useState('')
+  const [emailTaken, setEmailTaken] = useState(false)
   const [loading, setLoading] = useState(false)
   // Presentation-only: toggles the password input's `type` between
   // 'password' and 'text'. Does NOT touch the password value or onChange.
@@ -79,6 +80,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setEmailTaken(false)
     if (isSignUp) {
       if (!allPasswordChecksPass) {
         setError('Please meet all the password requirements below.')
@@ -119,7 +121,9 @@ function Login() {
         }
       }
     } catch (err) {
-      if (err.code === 'auth/user-not-found') {
+      if (err.code === 'auth/email-already-in-use') {
+        setEmailTaken(true)
+      } else if (err.code === 'auth/user-not-found') {
         setError('No account found. Please sign up.')
       } else if (err.code === 'auth/wrong-password') {
         setError('Incorrect password.')
@@ -159,6 +163,12 @@ function Login() {
           <p className="login-subtitle">{isSignUp ? 'Start your fitness journey today.' : 'Continue your fitness journey.'}</p>
 
           {error && <div className="error-message" role="alert">{error}</div>}
+          {emailTaken && (
+            <div className="error-message info" role="alert">
+              This email is already registered.{' '}
+              <button type="button" className="msg-link" onClick={() => { setEmailTaken(false); setError(''); setIsSignUp(false) }}>Log in instead</button>
+            </div>
+          )}
 
           <button className="btn-google" onClick={handleGoogleSignIn} disabled={loading}>
             <span className="g-tile" aria-hidden="true">
@@ -272,9 +282,9 @@ function Login() {
 
           <div className="login-switch">
             {isSignUp ? (
-              <p>Already have an account? <button type="button" onClick={() => setIsSignUp(false)}>Sign In</button></p>
+              <p>Already have an account? <button type="button" onClick={() => { setIsSignUp(false); setEmailTaken(false); setError('') }}>Sign In</button></p>
             ) : (
-              <p>Don't have an account? <button type="button" onClick={() => setIsSignUp(true)}>Sign Up</button></p>
+              <p>Don't have an account? <button type="button" onClick={() => { setIsSignUp(true); setEmailTaken(false); setError('') }}>Sign Up</button></p>
             )}
           </div>
         </div>

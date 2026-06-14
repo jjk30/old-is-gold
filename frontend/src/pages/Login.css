@@ -138,6 +138,25 @@
   font-size: 15px;
   text-align: center;
 }
+.error-message.info {
+  background: rgba(217, 178, 90, 0.10);
+  color: var(--ink);
+  border: 1px solid rgba(228, 196, 122, 0.4);
+}
+.error-message .msg-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--gold-bright);
+  font-family: "Hanken Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.error-message .msg-link:hover {
+  color: var(--gold);
+}
 
 /* Google button: clean dark button with a thin border (not a heavy block). */
 .btn-google {
